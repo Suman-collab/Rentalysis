@@ -52,7 +52,7 @@ const ContactUs = () => {
 
           {/* Contact Form */}
           <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-neutral-200 p-8">
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); alert('Message sent!'); }}>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold text-neutral-700 mb-2">First Name</label>
