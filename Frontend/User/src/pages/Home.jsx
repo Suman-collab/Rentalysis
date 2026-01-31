@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Search, ArrowRight, ShieldCheck, Clock, CreditCard, RotateCcw, Monitor, Camera, Hammer, Armchair, Laptop } from 'lucide-react'
 
 import { products } from '../mock/data'
-import logo from '../assets/logo.png'
+import logo from '../assets/logo.jpg'
 
 const Home = () => {
   // Select products for hero grid

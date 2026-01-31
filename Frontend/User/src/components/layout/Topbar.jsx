@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Search, ShoppingCart, Bell, User, Menu, LogOut, Package, MapPin } from 'lucide-react'
 import { cartItems } from '../../mock/data'
-import logo from '../../assets/logo.png'
+import logo from '../../assets/logo.jpg'
 
 const Topbar = () => {
   const navigate = useNavigate()

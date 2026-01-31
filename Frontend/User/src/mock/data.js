@@ -99,6 +99,39 @@ export const orders = [
       { status: 'Active', date: 'Sep 28 - Oct 05', active: true, completed: true },
       { status: 'Returned', date: 'Oct 05, 05:00 PM', active: true, completed: true }
     ]
+  },
+  {
+    id: 'ORD-2023-7500',
+    date: 'Aug 15, 2023',
+    endDate: 'Aug 22, 2023',
+    total: 350.00,
+    status: 'Past',
+    paymentStatus: 'Paid',
+    items: [
+      { productId: '5', name: 'DJI Mavic 3 Pro Drone', image: products[4].image, quantity: 1, duration: 7 }
+    ],
+    timeline: [
+      { status: 'Quotation', date: 'Aug 10, 09:00 AM', active: true, completed: true },
+      { status: 'Confirmed', date: 'Aug 11, 10:00 AM', active: true, completed: true },
+      { status: 'Picked Up', date: 'Aug 15, 11:00 AM', active: true, completed: true },
+      { status: 'Active', date: 'Aug 15 - Aug 22', active: true, completed: true },
+      { status: 'Returned', date: 'Aug 22, 04:00 PM', active: true, completed: true }
+    ]
+  },
+  {
+    id: 'ORD-2023-9900',
+    date: 'Nov 01, 2023',
+    endDate: 'Nov 05, 2023',
+    total: 85.00,
+    status: 'Cancelled',
+    paymentStatus: 'Refunded',
+    items: [
+      { productId: '3', name: 'Herman Miller Aeron Chair', image: products[1].image, quantity: 1, duration: 4 }
+    ],
+    timeline: [
+      { status: 'Quotation', date: 'Oct 30, 02:00 PM', active: true, completed: true },
+      { status: 'Cancelled', date: 'Nov 01, 09:00 AM', active: true, completed: true }
+    ]
   }
 ]
 

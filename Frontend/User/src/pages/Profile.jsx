@@ -7,27 +7,96 @@ import { Link, useNavigate } from 'react-router-dom'
 const Profile = () => {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('dashboard')
-  const [editingAddress, setEditingAddress] = useState(false)
-  const [isAddingAddress, setIsAddingAddress] = useState(false)
+  // State for list of addresses
+  const [savedAddresses, setSavedAddresses] = useState([
+    {
+      id: 1,
+      name: 'Home Office',
+      fullName: import.meta.env.VITE_USER_NAME,
+      street: '4521 Silicon Valley Rd, Suite 100',
+      city: 'San Jose',
+      state: 'CA',
+      zip: '95134',
+      country: 'United States',
+      isDefault: true
+    }
+  ])
 
-  // Address Form State
+  const [isAddingAddress, setIsAddingAddress] = useState(false)
+  const [editingId, setEditingId] = useState(null) // Track which address is being edited
+
+  // Form state for adding/editing
   const [addressForm, setAddressForm] = useState({
-    name: 'Home Office',
-    fullName: import.meta.env.VITE_USER_NAME,
-    street: '4521 Silicon Valley Rd, Suite 100',
-    city: 'San Jose',
-    state: 'CA',
-    zip: '95134',
-    country: 'United States'
+    id: null,
+    name: '',
+    fullName: '',
+    street: '',
+    city: '',
+    state: '',
+    zip: '',
+    country: ''
   })
+
+  // Initialize form when adding new address
+  const startAddAddress = () => {
+    setAddressForm({
+      id: null,
+      name: '',
+      fullName: '',
+      street: '',
+      city: '',
+      state: '',
+      zip: '',
+      country: ''
+    })
+    setIsAddingAddress(true)
+    setEditingId(null)
+  }
+
+  // Initialize form when editing
+  const startEditAddress = (address) => {
+    setAddressForm(address)
+    setEditingId(address.id)
+    setIsAddingAddress(false)
+  }
 
   const handleAddressChange = (e) => {
     setAddressForm({ ...addressForm, [e.target.name]: e.target.value })
   }
 
-  const saveAddress = () => {
-    setEditingAddress(false)
+  const handleSaveAddress = () => {
+    if (editingId) {
+      // Update existing
+      setSavedAddresses(prev => prev.map(addr => addr.id === editingId ? { ...addressForm, id: editingId } : addr))
+      setEditingId(null)
+    } else {
+      // Add new
+      const newId = Date.now()
+      setSavedAddresses(prev => [...prev, { ...addressForm, id: newId, isDefault: prev.length === 0 }])
+      setIsAddingAddress(false)
+    }
+    handleCancel() // Reset form after save
+  }
+
+  const handleDeleteAddress = (id) => {
+    if (confirm('Are you sure you want to delete this address?')) {
+      setSavedAddresses(prev => prev.filter(addr => addr.id !== id))
+    }
+  }
+
+  const handleCancel = () => {
     setIsAddingAddress(false)
+    setEditingId(null)
+    setAddressForm({
+      id: null,
+      name: '',
+      fullName: '',
+      street: '',
+      city: '',
+      state: '',
+      zip: '',
+      country: ''
+    })
   }
 
   const tabs = [
@@ -40,6 +109,9 @@ const Profile = () => {
   const handleLogout = () => {
     navigate('/login')
   }
+
+  const defaultAddress = savedAddresses.find(addr => addr.isDefault) || savedAddresses[0];
+
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start min-h-screen bg-gray-50/50">
@@ -162,16 +234,24 @@ const Profile = () => {
               <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="font-bold text-neutral-900 flex items-center gap-2"><MapPin className="w-4 h-4 text-emerald-500" /> Saved Addresses</h3>
-                  <button onClick={() => setIsAddingAddress(true)} className="text-xs font-bold text-emerald-600 hover:underline">+ Add New</button>
+                  <button onClick={() => setActiveTab('addresses')} className="text-xs font-bold text-emerald-600 hover:underline">+ Add New</button>
                 </div>
-                <div className="bg-neutral-50 rounded-xl p-4 border border-neutral-100">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="bg-neutral-200 text-neutral-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Home</span>
+                {defaultAddress ? (
+                  <div className="bg-neutral-50 rounded-xl p-4 border border-neutral-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="bg-neutral-200 text-neutral-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">{defaultAddress.name}</span>
+                    </div>
+                    <p className="text-sm font-bold text-neutral-900">{defaultAddress.fullName}</p>
+                    <p className="text-xs text-neutral-500 mt-1">
+                      {defaultAddress.street}<br />
+                      {defaultAddress.city}, {defaultAddress.state} {defaultAddress.zip}<br />
+                      {defaultAddress.country}
+                    </p>
+                    <button onClick={() => setActiveTab('addresses')} className="text-xs font-bold text-emerald-600 mt-3">VIEW ALL ADDRESSES</button>
                   </div>
-                  <p className="text-sm font-bold text-neutral-900">4521 Westwood Avenue</p>
-                  <p className="text-xs text-neutral-500 mt-1">Apt 8B, San Francisco<br />CA 94112, United States</p>
-                  <button className="text-xs font-bold text-emerald-600 mt-3">EDIT AS PRIMARY</button>
-                </div>
+                ) : (
+                  <div className="text-center py-4 text-neutral-500 text-sm">No default address set.</div>
+                )}
               </div>
             </div>
           </div>
@@ -228,7 +308,21 @@ const Profile = () => {
                           </div>
 
                           <div className="flex items-center gap-2">
-                            <button className="flex items-center gap-1.5 px-3 py-1.5 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-600 hover:bg-neutral-50 transition-colors">
+                            <button
+                              onClick={() => {
+                                const invoiceContent = `Invoice for Order #${order.id}\nDate: ${order.date}\nAmount: ₹${order.total}\n\nThank you for renting with Rentalysis!`;
+                                const blob = new Blob([invoiceContent], { type: 'text/plain' });
+                                const url = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `Invoice-${order.id}.txt`;
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                                window.URL.revokeObjectURL(url);
+                              }}
+                              className="flex items-center gap-1.5 px-3 py-1.5 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-600 hover:bg-neutral-50 transition-colors"
+                            >
                               <FileText className="w-3.5 h-3.5" /> Invoice
                             </button>
                             <button className="px-4 py-1.5 bg-sky-500 text-white rounded-lg text-xs font-bold hover:bg-sky-600 transition-colors shadow-sm shadow-sky-200">
@@ -291,46 +385,81 @@ const Profile = () => {
           <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-neutral-900">Saved Addresses</h2>
-              <button onClick={() => setIsAddingAddress(true)} className="px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-lg hover:bg-emerald-700 shadow-lg shadow-emerald-200">
+              <button
+                onClick={startAddAddress}
+                className="px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-lg hover:bg-emerald-700 shadow-lg shadow-emerald-200"
+              >
                 + Add New Address
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white p-6 rounded-2xl border border-emerald-200 shadow-sm relative ring-1 ring-emerald-50">
-                <div className="absolute top-4 right-4 bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">Primary</div>
+              {/* Existing Addresses */}
+              {savedAddresses.map((addr) => (
+                <div key={addr.id} className={`bg-white p-6 rounded-2xl border ${addr.isDefault ? 'border-emerald-200 ring-1 ring-emerald-50' : 'border-neutral-200'} shadow-sm relative`}>
+                  {addr.isDefault && (
+                    <div className="absolute top-4 right-4 bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">Primary</div>
+                  )}
 
-                {editingAddress ? (
-                  <div className="space-y-3">
-                    <input type="text" name="name" value={addressForm.name} onChange={handleAddressChange} className="w-full text-sm font-bold border rounded px-2 py-1 mb-2" />
-                    <input type="text" name="fullName" value={addressForm.fullName} onChange={handleAddressChange} className="w-full text-sm border rounded px-2 py-1" />
-                    <input type="text" name="street" value={addressForm.street} onChange={handleAddressChange} className="w-full text-sm border rounded px-2 py-1" />
-                    <div className="flex gap-2">
-                      <input type="text" name="city" value={addressForm.city} onChange={handleAddressChange} className="w-full text-sm border rounded px-2 py-1" />
-                      <input type="text" name="state" value={addressForm.state} onChange={handleAddressChange} className="w-20 text-sm border rounded px-2 py-1" />
-                    </div>
-                    <button onClick={saveAddress} className="w-full bg-emerald-600 text-white text-sm font-bold py-1.5 rounded-lg hover:bg-emerald-700">Save</button>
-                    <button onClick={() => setEditingAddress(false)} className="w-full text-neutral-500 text-xs py-1">Cancel</button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="p-2 bg-emerald-50 rounded-lg">
-                        <MapPin className="w-5 h-5 text-emerald-600" />
+                  {editingId === addr.id ? (
+                    <div className="space-y-3">
+                      <input type="text" name="name" value={addressForm.name} onChange={handleAddressChange} placeholder="Label (e.g. Home)" className="w-full text-sm font-bold border rounded px-2 py-1 mb-2" />
+                      <input type="text" name="fullName" value={addressForm.fullName} onChange={handleAddressChange} placeholder="Full Name" className="w-full text-sm border rounded px-2 py-1" />
+                      <input type="text" name="street" value={addressForm.street} onChange={handleAddressChange} placeholder="Street" className="w-full text-sm border rounded px-2 py-1" />
+                      <div className="flex gap-2">
+                        <input type="text" name="city" value={addressForm.city} onChange={handleAddressChange} placeholder="City" className="w-full text-sm border rounded px-2 py-1" />
+                        <input type="text" name="state" value={addressForm.state} onChange={handleAddressChange} placeholder="State" className="w-20 text-sm border rounded px-2 py-1" />
                       </div>
-                      <h3 className="font-bold text-neutral-900 uppercase tracking-wide text-xs">{addressForm.name}</h3>
+                      <div className="flex gap-2">
+                        <input type="text" name="zip" value={addressForm.zip} onChange={handleAddressChange} placeholder="Zip" className="w-24 text-sm border rounded px-2 py-1" />
+                        <input type="text" name="country" value={addressForm.country} onChange={handleAddressChange} placeholder="Country" className="w-full text-sm border rounded px-2 py-1" />
+                      </div>
+                      <button onClick={handleSaveAddress} className="w-full bg-emerald-600 text-white text-sm font-bold py-1.5 rounded-lg hover:bg-emerald-700">Save</button>
+                      <button onClick={handleCancel} className="w-full text-neutral-500 text-xs py-1">Cancel</button>
                     </div>
-                    <p className="text-sm text-neutral-600 mb-6 leading-relaxed font-medium">
-                      {addressForm.street}<br />
-                      {addressForm.city}, {addressForm.state} {addressForm.zip}
-                    </p>
-                    <div className="flex gap-3 text-xs font-bold uppercase tracking-wide">
-                      <button onClick={() => setEditingAddress(true)} className="text-emerald-600 hover:underline">Edit</button>
-                      <button onClick={() => alert('Address removed!')} className="text-red-500 hover:underline">Remove</button>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className={`p-2 rounded-lg ${addr.isDefault ? 'bg-emerald-50' : 'bg-neutral-100'}`}>
+                          <MapPin className={`w-5 h-5 ${addr.isDefault ? 'text-emerald-600' : 'text-neutral-500'}`} />
+                        </div>
+                        <h3 className="font-bold text-neutral-900 uppercase tracking-wide text-xs">{addr.name}</h3>
+                      </div>
+                      <p className="text-sm text-neutral-600 mb-6 leading-relaxed font-medium">
+                        {addr.street}<br />
+                        {addr.city}, {addr.state} {addr.zip}<br />
+                        {addr.country}
+                      </p>
+                      <div className="flex gap-3 text-xs font-bold uppercase tracking-wide">
+                        <button onClick={() => startEditAddress(addr)} className="text-emerald-600 hover:underline">Edit</button>
+                        <button onClick={() => handleDeleteAddress(addr.id)} className="text-red-500 hover:underline">Remove</button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))}
+
+              {/* Add New Address Form Card */}
+              {isAddingAddress && (
+                <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm relative">
+                  <h3 className="font-bold text-neutral-900 mb-4">Add New Address</h3>
+                  <div className="space-y-3">
+                    <input type="text" name="name" value={addressForm.name} onChange={handleAddressChange} placeholder="Address Label" className="w-full text-sm border rounded px-2 py-1" />
+                    <input type="text" name="fullName" value={addressForm.fullName} onChange={handleAddressChange} placeholder="Full Name" className="w-full text-sm border rounded px-2 py-1" />
+                    <input type="text" name="street" value={addressForm.street} onChange={handleAddressChange} placeholder="Street Address" className="w-full text-sm border rounded px-2 py-1" />
+                    <div className="flex gap-2">
+                      <input type="text" name="city" value={addressForm.city} onChange={handleAddressChange} placeholder="City" className="w-full text-sm border rounded px-2 py-1" />
+                      <input type="text" name="state" value={addressForm.state} onChange={handleAddressChange} placeholder="State" className="w-20 text-sm border rounded px-2 py-1" />
                     </div>
-                  </>
-                )}
-              </div>
+                    <div className="flex gap-2">
+                      <input type="text" name="zip" value={addressForm.zip} onChange={handleAddressChange} placeholder="Zip" className="w-24 text-sm border rounded px-2 py-1" />
+                      <input type="text" name="country" value={addressForm.country} onChange={handleAddressChange} placeholder="Country" className="w-full text-sm border rounded px-2 py-1" />
+                    </div>
+                    <button onClick={handleSaveAddress} className="w-full bg-emerald-600 text-white text-sm font-bold py-1.5 rounded-lg hover:bg-emerald-700">Save</button>
+                    <button onClick={handleCancel} className="w-full text-neutral-500 text-xs py-1">Cancel</button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
