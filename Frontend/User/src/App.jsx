@@ -34,6 +34,7 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/invoices/:id" element={<Invoice />} />
 
         <Route element={<Layout />}>
           {/* Redirect root to Profile as per request, or Home if preferred. User asked for Profile after login. */}
@@ -47,7 +48,6 @@ const App = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders/:id" element={<OrderTrack />} />
-          <Route path="/invoices/:id" element={<Invoice />} />
           <Route path="/profile" element={<Profile />} />
 
           {/* Dashboard route removed/redirected as requested */}

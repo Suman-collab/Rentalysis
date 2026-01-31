@@ -1,7 +1,7 @@
 // FILE: src/pages/Checkout.jsx
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ShieldCheck, CreditCard, Wallet, Apple, User, MapPin, ArrowLeft } from 'lucide-react'
+import { ShieldCheck, CreditCard, Wallet, User, MapPin, ArrowLeft } from 'lucide-react'
 
 const Checkout = () => {
   const navigate = useNavigate()
@@ -143,12 +143,7 @@ const Checkout = () => {
                 </div>
               </label>
 
-              <label className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'apple' ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600' : 'border-neutral-200 hover:border-neutral-300'}`}>
-                <div className="flex items-center gap-3">
-                  <input type="radio" name="payment" checked={paymentMethod === 'apple'} onChange={() => setPaymentMethod('apple')} className="text-emerald-600 focus:ring-emerald-500" />
-                  <span className="font-medium text-neutral-900 flex items-center gap-2"><Apple className="w-4 h-4" /> Apple Pay</span>
-                </div>
-              </label>
+
 
               <label className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'paypal' ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600' : 'border-neutral-200 hover:border-neutral-300'}`}>
                 <div className="flex items-center gap-3">

@@ -22,8 +22,11 @@ const Home = () => {
           {/* Left: Text & Actions */}
           <div className="flex-1 w-full space-y-6 md:space-y-8 lg:max-w-3xl text-center lg:text-left">
             <h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-7xl font-extrabold text-neutral-900 tracking-tight leading-[1.1] md:leading-[1.05]">
-              Where Quality<br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">meets Convenience</span>
+              Where<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Quality </span>
+              meets
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Convenience.</span>
             </h1>
 
             <p className="text-lg md:text-xl text-neutral-500 leading-relaxed max-w-xl mx-auto lg:mx-0 font-medium px-2 md:px-0">
