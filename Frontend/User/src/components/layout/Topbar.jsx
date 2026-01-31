@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Search, ShoppingCart, Bell, User, Menu, LogOut, Package, MapPin } from 'lucide-react'
 import { cartItems } from '../../mock/data'
 import logo from '../../assets/logo.png'
+import Notifications from '../Notifications'
 
 const Topbar = () => {
   const navigate = useNavigate()
@@ -60,10 +61,8 @@ const Topbar = () => {
           </Link>
 
           {/* Notifications */}
-          <button className="relative p-2 text-neutral-600 hover:bg-neutral-100 rounded-full transition-colors">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1.5 right-2 w-2 h-2 bg-blue-500 rounded-full border border-white"></span>
-          </button>
+          {/* Notifications */}
+          <Notifications />
 
           {/* Profile Dropdown */}
           <div className="relative">
