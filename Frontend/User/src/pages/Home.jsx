@@ -1,14 +1,52 @@
-// FILE: src/pages/Home.jsx
+
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Search, ArrowRight, ShieldCheck, Clock, CreditCard, RotateCcw, Monitor, Camera, Hammer, Armchair, Laptop } from 'lucide-react'
 
 import { products } from '../mock/data'
+import api from '../services/api'
+import { normalizeProductList } from '../utils/dataMapper'
 import logo from '../assets/logo.png'
 
 const Home = () => {
-  // Select products for hero grid
-  const heroProducts = products.slice(0, 4)
+  const [heroProducts, setHeroProducts] = React.useState([])
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+
+        const productsRes = await api.get('/products')
+
+        const normalizedProducts = normalizeProductList(productsRes.data)
+        setHeroProducts(normalizedProducts.slice(0, 4))
+
+
+        const token = localStorage.getItem('token')
+        if (token) {
+          try {
+            const meRes = await api.get('/auth/me')
+            localStorage.setItem('user', JSON.stringify(meRes.data))
+          } catch (e) {
+            console.error('Failed to fetch user:', e)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch home data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-neutral-900"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-12 md:space-y-20 pb-12 animate-in fade-in duration-700 overflow-x-hidden">
@@ -45,7 +83,7 @@ const Home = () => {
                 ))}
                 <div className="w-8 h-8 rounded-full border-2 border-white bg-blue-50 flex items-center justify-center text-[10px] font-bold text-blue-600">+2k</div>
               </div>
-              <p>Trusted by creators worldwide</p>
+              <p>Trusted by customers worldwide</p>
             </div>
           </div>
 
@@ -58,7 +96,7 @@ const Home = () => {
               {heroProducts.map((product, idx) => (
                 <Link
                   to={`/products/${product.id}`}
-                  key={product.id}
+                  key={product.id || idx}
                   className={`bg-white p-2 md:p-3 rounded-xl md:rounded-2xl border border-neutral-100 shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-2 hover:z-30 relative group`}
                 >
                   <div className="aspect-[5/4] bg-neutral-50 rounded-lg md:rounded-xl mb-2 md:mb-3 overflow-hidden relative">

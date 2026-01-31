@@ -1,4 +1,4 @@
-// FILE: src/components/layout/Sidebar.jsx
+
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { LayoutDashboard, ShoppingBag, ShoppingCart, Package, MoreHorizontal, Settings, LogOut, HelpCircle, ChevronRight } from 'lucide-react'

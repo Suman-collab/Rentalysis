@@ -1,19 +1,16 @@
-// FILE: src/pages/auth/Login.jsx
-import React from 'react'
-
-import { Link, useNavigate } from 'react-router-dom'
 import logo from '../../assets/logo.png'
-
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import api from '../../services/api'
 const Login = () => {
   const navigate = useNavigate()
-
-  // Use env variables for default login ease
-  const [formData, setFormData] = React.useState({
-    email: import.meta.env.VITE_USER_EMAIL || '',
-    password: import.meta.env.VITE_USER_PASSWORD || ''
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
   })
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  // Handle input changes
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -21,15 +18,40 @@ const Login = () => {
     })
   }
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
-    // Redirect to profile as it is the main user hub now
-    navigate('/profile')
+    setIsLoading(true)
+    setError('')
+
+    try {
+      const response = await api.post('/auth/login', formData)
+      const data = response.data;
+
+
+      if (data.access_token) {
+        localStorage.setItem('token', data.access_token)
+      } else if (data.token) {
+
+        localStorage.setItem('token', data.token)
+      }
+
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user))
+      }
+
+
+      navigate('/home')
+    } catch (err) {
+      console.error('Login error:', err)
+      const errorMessage = err.response?.data?.message || err.response?.data?.detail || 'An error occurred during login'
+      setError(errorMessage)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-white">
-      {/* Left: Login Form */}
       <div className="flex items-center justify-center p-8 sm:p-12 lg:p-16">
         <div className="w-full max-w-sm space-y-8 animate-in fade-in slide-in-from-left-4 duration-700">
           <div className="space-y-2">
@@ -38,7 +60,11 @@ const Login = () => {
               Enter your email to sign in to your account
             </p>
           </div>
-
+          {error && (
+            <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">
+              {error}
+            </div>
+          )}
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70" htmlFor="email">
@@ -75,8 +101,12 @@ const Login = () => {
               />
             </div>
 
-            <button className="inline-flex items-center justify-center w-full h-10 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors">
-              Sign In
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="inline-flex items-center justify-center w-full h-10 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors"
+            >
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </button>
 
             <button type="button" className="inline-flex items-center justify-center w-full h-10 rounded-md border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-900 hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2 transition-colors">

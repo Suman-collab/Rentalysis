@@ -1,4 +1,4 @@
-// FILE: src/pages/Checkout.jsx
+
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ShieldCheck, CreditCard, Wallet, User, MapPin, ArrowLeft } from 'lucide-react'
@@ -8,7 +8,7 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState('card')
   const [selectedCardId, setSelectedCardId] = useState('')
 
-  // Mock saved cards (in a real app, strict sync with profile data)
+
   const savedCards = [
     { id: 1, type: 'Visa', last4: '4242', expiry: '12/28' },
     { id: 2, type: 'Mastercard', last4: '8899', expiry: '09/25' }

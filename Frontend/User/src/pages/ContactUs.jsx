@@ -1,4 +1,4 @@
-// FILE: src/pages/ContactUs.jsx
+
 import React from 'react'
 import { Mail, MapPin, Phone, Send } from 'lucide-react'
 

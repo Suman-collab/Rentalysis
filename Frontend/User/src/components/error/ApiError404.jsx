@@ -1,4 +1,4 @@
-// FILE: src/components/error/ApiError404.jsx
+
 import React from 'react'
 import { Link2Off, RotateCw, Home, AlertCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'

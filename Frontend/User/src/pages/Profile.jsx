@@ -1,4 +1,4 @@
-// FILE: src/pages/Profile.jsx
+
 import React, { useState, useEffect } from 'react'
 import { User, Package, MapPin, CreditCard, LogOut, Edit2, Download, ChevronRight, Filter, Search, RotateCcw, Calendar, Clock, FileText, Trash2 } from 'lucide-react'
 import { orders } from '../mock/data'
@@ -9,7 +9,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [activeOrderTab, setActiveOrderTab] = useState('Active')
   const [selectedOrder, setSelectedOrder] = useState(null)
-  // State for list of addresses
+
   const [savedAddresses, setSavedAddresses] = useState([
     {
       id: 1,
@@ -23,7 +23,7 @@ const Profile = () => {
     }
   ])
 
-  // State for saved cards
+
   const [savedCards, setSavedCards] = useState(() => {
     const saved = localStorage.getItem('user_cards')
     return saved ? JSON.parse(saved) : [
@@ -39,7 +39,7 @@ const Profile = () => {
   const [cardForm, setCardForm] = useState({ number: '', expiry: '', cvc: '', holder: '' })
 
   const handleAddCard = () => {
-    // Mock validation and add
+
     const last4 = cardForm.number.slice(-4) || '0000'
     const type = cardForm.number.startsWith('4') ? 'Visa' : 'Mastercard'
     setSavedCards([...savedCards, { id: Date.now(), type, last4, expiry: cardForm.expiry, holder: cardForm.holder }])
@@ -56,7 +56,7 @@ const Profile = () => {
   const [isAddingAddress, setIsAddingAddress] = useState(false)
   const [editingId, setEditingId] = useState(null) // Track which address is being edited
 
-  // Form state for adding/editing
+
   const [addressForm, setAddressForm] = useState({
     id: null,
     name: '',
@@ -68,7 +68,7 @@ const Profile = () => {
     country: ''
   })
 
-  // Initialize form when adding new address
+
   const startAddAddress = () => {
     setAddressForm({
       id: null,
@@ -84,7 +84,7 @@ const Profile = () => {
     setEditingId(null)
   }
 
-  // Initialize form when editing
+
   const startEditAddress = (address) => {
     setAddressForm(address)
     setEditingId(address.id)
@@ -97,11 +97,11 @@ const Profile = () => {
 
   const handleSaveAddress = () => {
     if (editingId) {
-      // Update existing
+
       setSavedAddresses(prev => prev.map(addr => addr.id === editingId ? { ...addressForm, id: editingId } : addr))
       setEditingId(null)
     } else {
-      // Add new
+
       const newId = Date.now()
       setSavedAddresses(prev => [...prev, { ...addressForm, id: newId, isDefault: prev.length === 0 }])
       setIsAddingAddress(false)

@@ -1,4 +1,4 @@
-// FILE: src/pages/OrderTrack.jsx
+
 import React from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { CheckCircle2, Circle, Clock, MapPin, Phone, MessageSquare, Calendar, ChevronRight, FileText, ArrowLeft } from 'lucide-react'
@@ -6,7 +6,7 @@ import { orders } from '../mock/data'
 
 const OrderTrack = () => {
   const { id } = useParams()
-  // Mock finding order, fallback to first one if ID doesn't match
+
   const order = orders.find(o => o.id === id) || orders[0]
 
   return (

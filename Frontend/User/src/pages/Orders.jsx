@@ -1,4 +1,4 @@
-// FILE: src/pages/Orders.jsx
+
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Package, Calendar, MapPin, ChevronRight, FileText, ArrowRight } from 'lucide-react'

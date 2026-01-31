@@ -6,7 +6,7 @@ import logo from '../assets/logo.png'
 
 const Invoice = () => {
   const { id } = useParams()
-  // Extended Invoice Data (Mocking missing fields for UI completeness)
+
   const baseInvoice = invoices[0]
   const invoice = {
     ...baseInvoice,

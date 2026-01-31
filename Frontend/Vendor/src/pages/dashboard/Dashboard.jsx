@@ -3,13 +3,11 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 const Dashboard = () => {
 
   const revenueData = [
-    { name: 'Mon', revenue: 4000 },
-    { name: 'Tue', revenue: 3000 },
-    { name: 'Wed', revenue: 2000 },
-    { name: 'Thu', revenue: 2780 },
-    { name: 'Fri', revenue: 1890 },
-    { name: 'Sat', revenue: 2390 },
-    { name: 'Sun', revenue: 3490 },
+    { name: '1', revenue: 4000 }, { name: '2', revenue: 3000 }, { name: '3', revenue: 2000 }, { name: '4', revenue: 2780 }, { name: '5', revenue: 1890 }, { name: '6', revenue: 2390 },
+    { name: '7', revenue: 3490 }, { name: '8', revenue: 4200 }, { name: '9', revenue: 3800 }, { name: '10', revenue: 3000 }, { name: '11', revenue: 2500 }, { name: '12', revenue: 2900 },
+    { name: '13', revenue: 3300 }, { name: '14', revenue: 3800 }, { name: '15', revenue: 4100 }, { name: '16', revenue: 4600 }, { name: '17', revenue: 3900 }, { name: '18', revenue: 3200 },
+    { name: '19', revenue: 3500 }, { name: '20', revenue: 4000 }, { name: '21', revenue: 4200 }, { name: '22', revenue: 4500 }, { name: '23', revenue: 4800 }, { name: '24', revenue: 4100 },
+    { name: '25', revenue: 3900 }, { name: '26', revenue: 3800 }, { name: '27', revenue: 4200 }, { name: '28', revenue: 4400 }, { name: '29', revenue: 4300 }, { name: '30', revenue: 4800 }
   ]
 
   const categoryData = [

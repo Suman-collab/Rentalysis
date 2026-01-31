@@ -1,4 +1,4 @@
-// FILE: src/pages/Error404.jsx
+
 import React from 'react'
 import ApiError404 from '../components/error/ApiError404'
 

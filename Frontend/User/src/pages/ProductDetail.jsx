@@ -1,34 +1,72 @@
-// FILE: src/pages/ProductDetail.jsx
+
 import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Calendar, ShoppingCart, Star, Shield, ArrowLeft, Heart, Share2, Info } from 'lucide-react'
-import { products } from '../mock/data'
+import api from '../services/api'
 
 const ProductDetail = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const product = products.find(p => p.id === id) || products[0]
-  const [activeImage, setActiveImage] = useState(0)
-  const availablePlans = product.availablePlans || ['day', 'week', 'month']
 
-  // Date State
+  const [product, setProduct] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [activeImage, setActiveImage] = useState(0)
+
+
+  React.useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await api.get(`/products/${id}`)
+        setProduct(response.data)
+      } catch (err) {
+        console.error('Failed to fetch product:', err)
+        setError('Product not found')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProduct()
+  }, [id])
+
+
   const [dates, setDates] = useState({
     start: '',
     end: ''
   })
 
-  // Calculate prices logic
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-neutral-900"></div>
+      </div>
+    )
+  }
+
+  if (error || !product) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center gap-4">
+        <p className="text-xl font-bold text-neutral-900">Product not found</p>
+        <button onClick={() => navigate('/products')} className="text-blue-600 hover:underline">Back to Products</button>
+      </div>
+    )
+  }
+
+  const availablePlans = product.availablePlans || ['day', 'week', 'month']
+
+
   const pricing = {
     day: product.price,
     week: Math.round(product.price * 5.5),
     month: Math.round(product.price * 22)
   }
 
-  // Calculate duration in days
-  // Validate dates
+
+
   const isInvalidDate = dates.start && dates.end && new Date(dates.start) > new Date(dates.end)
 
-  // Calculate duration in days
+
   const calculateDuration = () => {
     if (!dates.start || !dates.end || isInvalidDate) return 0
     const start = new Date(dates.start)
@@ -40,7 +78,7 @@ const ProductDetail = () => {
 
   const days = calculateDuration()
 
-  // 1. Smart Cost Calculation (Hybrid Pricing)
+
   const totalCost = (() => {
     if (days === 0) return 0
 
@@ -53,7 +91,7 @@ const ProductDetail = () => {
     return (months * pricing.month) + (weeks * pricing.week) + (extraDays * pricing.day)
   })()
 
-  // 2. Breakdown String
+
   const priceBreakdown = (() => {
     if (days === 0) return ''
     const months = Math.floor(days / 30)
@@ -69,11 +107,11 @@ const ProductDetail = () => {
     return parts.join(' + ')
   })()
 
-  // 3. Suggestion Logic (Upsell)
+
   let suggestion = ''
   if (days > 0) {
     const remainingDaysToWeek = 7 - (days % 30) // Approximate check for weekly upsell
-    // Simple checks:
+
     if (days < 7 && days >= 4) {
       suggestion = 'Extend to 7 days for best Weekly Value!'
     } else if (days < 30 && days >= 21) {
@@ -278,7 +316,6 @@ const ProductDetail = () => {
                           end: dates.end,
                           selectedPlan: days >= 30 ? 'month' : (days >= 7 ? 'week' : 'day'),
                           planPrice: pricing[days >= 30 ? 'month' : (days >= 7 ? 'week' : 'day')],
-                          // Pass effective daily price from smart calculation for Cart compatibility
                           price: days > 0 ? (totalCost / days) : pricing.day
                         }
                       }

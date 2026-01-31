@@ -32,7 +32,7 @@ const Filters = () => {
   }
 
   const handleApply = () => {
-    // In a real app, this would pass params back to Products
+
     navigate('/products')
   }
 
@@ -115,8 +115,8 @@ const Filters = () => {
                 key={duration}
                 onClick={() => setSelectedDuration(duration)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedDuration === duration
-                    ? 'bg-neutral-900 text-white shadow-md'
-                    : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50'
+                  ? 'bg-neutral-900 text-white shadow-md'
+                  : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50'
                   }`}
               >
                 {duration}

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Check, Printer, User } from 'lucide-react'
 
 const OrderSuccess = () => {
-  // Mock Data
+
   const order = {
     id: 'SO00010',
     productName: 'Sony Alpha a7S III',

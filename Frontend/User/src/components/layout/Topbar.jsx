@@ -1,17 +1,43 @@
-// FILE: src/components/layout/Topbar.jsx
+
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Search, ShoppingCart, Bell, User, Menu, LogOut, Package, MapPin } from 'lucide-react'
-import { cartItems } from '../../mock/data'
+import { cartItems, products } from '../../mock/data'
+import api from '../../services/api'
 import logo from '../../assets/logo.png'
 import Notifications from '../Notifications'
 
 const Topbar = () => {
   const navigate = useNavigate()
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showSuggestions, setShowSuggestions] = useState(false)
+
+  const [searchResults, setSearchResults] = useState([])
+
+
+  React.useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (searchTerm.length > 1) {
+        try {
+
+          const response = await api.get(`/products?search=${searchTerm}`)
+          setSearchResults(response.data.slice(0, 5))
+        } catch (error) {
+          console.error("Search failed", error)
+          setSearchResults([])
+        }
+      } else {
+        setSearchResults([])
+      }
+    }, 300)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchTerm])
 
   const handleLogout = () => {
-    // Add any clear session logic here if needed
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
     setIsProfileOpen(false)
     navigate('/login')
   }
@@ -32,8 +58,41 @@ const Topbar = () => {
               type="text"
               placeholder="Search for products, brands and more..."
               className="w-full h-10 pl-4 pr-10 rounded-lg bg-neutral-100 border-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             />
             <Search className="absolute right-3 top-2.5 h-5 w-5 text-neutral-400" />
+
+            {/* Search Suggestions */}
+            {showSuggestions && searchTerm && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-neutral-100 overflow-hidden z-50">
+                {searchResults.length > 0 ? (
+                  searchResults.map(product => (
+                    <Link
+                      key={product.id}
+                      to={`/products/${product.id}`}
+                      onClick={() => {
+                        setSearchTerm('')
+                        setShowSuggestions(false)
+                      }}
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-50 border-b border-neutral-50 last:border-none transition-colors"
+                    >
+                      <div className="w-8 h-8 rounded bg-neutral-100 overflow-hidden flex-shrink-0">
+                        <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-neutral-900 line-clamp-1">{product.name}</p>
+                        <p className="text-xs text-neutral-500">{product.category}</p>
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="px-4 py-3 text-sm text-neutral-500 text-center">No results found</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

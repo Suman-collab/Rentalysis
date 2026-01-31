@@ -1,4 +1,4 @@
-// FILE: src/pages/Products.jsx
+
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, ChevronDown, Heart, Check, Filter } from 'lucide-react'
@@ -8,7 +8,7 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
 
-  // Filter States
+
   const [brandSearch, setBrandSearch] = useState('')
   const [selectedBrands, setSelectedBrands] = useState([])
   const [selectedDuration, setSelectedDuration] = useState('All Durations')
@@ -17,7 +17,7 @@ const Products = () => {
   const categories = ['All', 'Electronics', 'Furniture', 'Tools', 'Audio', 'Camping', 'Fitness']
 
   const brands = ['Sony', 'Canon', 'Nikon', 'DJI', 'Apple', 'Samsung', 'Bose', 'Makita']
-  // Colors removed as per request
+
   const durations = ['All Durations', 'Day', 'Week', 'Month']
 
   const toggleBrand = (brand) => {
@@ -28,7 +28,7 @@ const Products = () => {
     }
   }
 
-  // Filter Logic
+
   const filteredProducts = products.filter(p =>
     p.status === 'Available' &&
     (selectedCategory === 'All' || p.category === selectedCategory) &&

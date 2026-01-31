@@ -1,4 +1,4 @@
-// FILE: src/App.jsx
+
 import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import Topbar from './components/layout/Topbar'
@@ -16,7 +16,7 @@ import Login from './pages/auth/Login'
 import Signup from './pages/auth/Signup'
 import Error404 from './pages/Error404'
 
-// New Layout without Sidebar
+
 const Layout = () => {
   return (
     <div className="min-h-screen bg-gray-100 text-neutral-900 font-sans">

@@ -1,4 +1,4 @@
-// FILE: src/pages/Cart.jsx
+
 import React, { useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Trash2, ArrowRight, Calendar, FileText, ShoppingCart } from 'lucide-react'
@@ -8,7 +8,7 @@ const Cart = () => {
   const location = useLocation()
 
   const [items, setItems] = React.useState(() => {
-    // Load from local storage
+
     const savedItems = localStorage.getItem('cartItems')
     let currentItems = savedItems ? JSON.parse(savedItems) : []
 
@@ -29,7 +29,7 @@ const Cart = () => {
     return currentItems
   })
 
-  // Save items to local storage
+
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(items))
   }, [items])
@@ -55,7 +55,7 @@ const Cart = () => {
   }
 
   const [dates, setDates] = React.useState(() => {
-    // Load from local storage
+
     const savedDates = localStorage.getItem('cartDates')
     if (savedDates) return JSON.parse(savedDates)
 
@@ -69,7 +69,7 @@ const Cart = () => {
     }
   })
 
-  // Save dates to local storage
+
   useEffect(() => {
     localStorage.setItem('cartDates', JSON.stringify(dates))
   }, [dates])

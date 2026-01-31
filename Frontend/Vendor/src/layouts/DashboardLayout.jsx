@@ -65,15 +65,9 @@ const DashboardLayout = () => {
       <div className="flex-1 flex flex-col min-w-0 md:ml-64">
         {/* Top Header */}
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 lg:px-8 sticky top-0 z-20">
-          {/* Search */}
-          <div className="relative w-96 hidden lg:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input
-              type="text"
-              placeholder="Search orders, items..."
-              className="w-full pl-10 pr-4 py-2 bg-gray-100 border-none rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 text-gray-900 placeholder:text-gray-500"
-            />
-          </div>
+
+          {/* Search Placeholder (removed as per request) */}
+          <div className="hidden lg:block w-96"></div>
 
           {/* Actions */}
           <div className="flex items-center gap-4">

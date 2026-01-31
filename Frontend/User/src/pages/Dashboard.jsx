@@ -1,11 +1,11 @@
-// FILE: src/pages/Dashboard.jsx
+
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Clock, CheckCircle, Package, TrendingUp, AlertCircle } from 'lucide-react'
 import { orders, products } from '../mock/data'
 
 const Dashboard = () => {
-  // Calculate mock stats
+
   const activeRentals = orders.filter(o => o.status === 'Active').length
   const completedRentals = orders.filter(o => o.status === 'Completed').length
   const totalSpent = orders.reduce((acc, curr) => acc + curr.total, 0)
@@ -85,8 +85,8 @@ const Dashboard = () => {
 
                   <div className="text-right flex flex-col items-end gap-1">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wide ${order.status === 'Active' ? 'bg-blue-100 text-blue-700' :
-                        order.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                          'bg-neutral-100 text-neutral-600'
+                      order.status === 'Completed' ? 'bg-green-100 text-green-700' :
+                        'bg-neutral-100 text-neutral-600'
                       }`}>
                       {order.status}
                     </span>
