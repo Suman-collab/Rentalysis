@@ -12,18 +12,7 @@ export const products = [
     reviews: 124,
     description: 'Professional-grade mirrorless camera with 33MP sensor, advanced autofocus, and 4K 60p video recording. Ideal for weddings, events, and high-end content creation.'
   },
-  {
-    id: '2',
-    name: 'MacBook Pro M3 Max 16"',
-    category: 'Electronics',
-    price: 85,
-    unit: 'day',
-    status: 'Available',
-    image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&q=80&w=1000',
-    rating: 4.9,
-    reviews: 89,
-    description: 'Ultimate performance for demanding workflows. M3 Max chip, 128GB RAM, 8TB SSD.'
-  },
+
   {
     id: '3',
     name: 'Herman Miller Aeron Chair',
@@ -138,15 +127,7 @@ export const invoices = [
 ]
 
 export const cartItems = [
-  {
-    id: 'c1',
-    product: products[1],
-    quantity: 1,
-    duration: 2,
-    price: 150.00,
-    startDate: 'Oct 17, 2023',
-    endDate: 'Oct 19, 2023'
-  },
+
   {
     id: 'c2',
     product: products[3],

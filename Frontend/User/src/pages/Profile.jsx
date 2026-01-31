@@ -1,63 +1,90 @@
 // FILE: src/pages/Profile.jsx
 import React, { useState } from 'react'
-import { User, Package, MapPin, CreditCard, LogOut, Edit2, Download, ChevronRight, Filter, Search, RotateCcw } from 'lucide-react'
+import { User, Package, MapPin, CreditCard, LogOut, Edit2, Download, ChevronRight, Filter, Search, RotateCcw, Calendar, Clock, FileText } from 'lucide-react'
 import { orders } from '../mock/data'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Profile = () => {
-  const [activeTab, setActiveTab] = useState('orders')
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState('dashboard')
+  const [editingAddress, setEditingAddress] = useState(false)
+  const [isAddingAddress, setIsAddingAddress] = useState(false)
+
+  // Address Form State
+  const [addressForm, setAddressForm] = useState({
+    name: 'Home Office',
+    fullName: import.meta.env.VITE_USER_NAME,
+    street: '4521 Silicon Valley Rd, Suite 100',
+    city: 'San Jose',
+    state: 'CA',
+    zip: '95134',
+    country: 'United States'
+  })
+
+  const handleAddressChange = (e) => {
+    setAddressForm({ ...addressForm, [e.target.name]: e.target.value })
+  }
+
+  const saveAddress = () => {
+    setEditingAddress(false)
+    setIsAddingAddress(false)
+  }
 
   const tabs = [
+    { id: 'dashboard', label: 'Dashboard', icon: User },
     { id: 'orders', label: 'My Orders', icon: Package },
     { id: 'transactions', label: 'Invoices & Payments', icon: CreditCard },
     { id: 'addresses', label: 'Addresses', icon: MapPin },
   ]
 
-  return (
-    <div className="flex flex-col lg:flex-row gap-8 items-start">
+  const handleLogout = () => {
+    navigate('/login')
+  }
 
-      {/* Left Column: Persistent Profile Summary & Tabs */}
-      <div className="w-full lg:w-80 flex-shrink-0 space-y-6 sticky top-24">
-        {/* Profile Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
-          <div className="h-24 bg-gradient-to-r from-blue-600 to-indigo-600 relative">
-            <button className="absolute top-4 right-4 p-1.5 bg-white/20 hover:bg-white/30 rounded-full text-white backdrop-blur-sm transition-colors">
-              <Edit2 className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="px-6 pb-6 text-center -mt-12">
-            <div className="w-24 h-24 mx-auto bg-white rounded-full p-1 shadow-md mb-3">
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200"
-                alt="Profile"
-                className="w-full h-full rounded-full object-cover"
-              />
+  return (
+    <div className="flex flex-col lg:flex-row gap-8 items-start min-h-screen bg-gray-50/50">
+
+      {/* Left Column: Navigation */}
+      <div className="w-full lg:w-72 flex-shrink-0 space-y-6 sticky top-24">
+        {/* Profile Summary */}
+        <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6 flex flex-col items-center text-center">
+          <div className="w-20 h-20 bg-emerald-100 rounded-full p-1 mb-4 relative">
+            <img
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200"
+              alt="Profile"
+              className="w-full h-full rounded-full object-cover"
+            />
+            <div className="absolute bottom-0 right-0 w-5 h-5 bg-emerald-500 border-2 border-white rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-white rounded-full"></div>
             </div>
-            <h2 className="text-xl font-bold text-neutral-900">Johnathan Smith</h2>
-            <p className="text-sm text-neutral-500 mb-2">j.smith@rentals.com</p>
-            <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full uppercase tracking-wide">
-              Gold Member
-            </span>
           </div>
+          <h2 className="text-lg font-bold text-neutral-900">{import.meta.env.VITE_USER_NAME}</h2>
+          <p className="text-xs text-neutral-500 mb-3">{import.meta.env.VITE_USER_EMAIL}</p>
+          <button className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full hover:bg-emerald-100 transition-colors">
+            Edit Profile
+          </button>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden py-2">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 px-6 py-4 text-sm font-medium transition-colors border-l-4 ${activeTab === tab.id
-                  ? 'bg-blue-50 text-blue-600 border-blue-600'
-                  : 'text-neutral-600 hover:bg-neutral-50 border-transparent'
+              className={`w-full flex items-center gap-3 px-6 py-3.5 text-sm font-medium transition-all ${activeTab === tab.id
+                ? 'bg-emerald-50 text-emerald-600 border-l-4 border-emerald-500'
+                : 'text-neutral-600 hover:bg-neutral-50 border-l-4 border-transparent'
                 }`}
             >
-              <tab.icon className="w-5 h-5" />
+              <tab.icon className={`w-5 h-5 ${activeTab === tab.id ? 'text-emerald-500' : 'text-neutral-400'}`} />
               {tab.label}
             </button>
           ))}
-          <div className="border-t border-neutral-100 mt-2">
-            <button className="w-full flex items-center gap-3 px-6 py-4 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors border-l-4 border-transparent">
+          <div className="border-t border-neutral-100 mt-2 pt-2">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-6 py-3.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors border-l-4 border-transparent"
+            >
               <LogOut className="w-5 h-5" />
               Logout
             </button>
@@ -68,91 +95,151 @@ const Profile = () => {
       {/* Right Column: Dynamic Content */}
       <div className="flex-1 w-full min-w-0">
 
+        {/* SECTION: DASHBOARD OVERVIEW */}
+        {activeTab === 'dashboard' && (
+          <div className="space-y-6 animate-in fade-in duration-500">
+            <div className="bg-white p-6 rounded-2xl border border-neutral-100 shadow-sm flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-neutral-900">User Profile Dashboard</h1>
+                <p className="text-sm text-neutral-500">Welcome back, {import.meta.env.VITE_USER_NAME}!</p>
+              </div>
+              <div className="flex gap-2">
+                <button className="p-2 text-neutral-400 hover:bg-neutral-100 rounded-full"><span className="sr-only">Settings</span>⚙️</button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 flex flex-col justify-between h-32">
+                <div className="flex justify-between items-start">
+                  <span className="text-blue-600 font-bold text-xs uppercase tracking-wider">Active Rentals</span>
+                  <Package className="w-5 h-5 text-blue-500" />
+                </div>
+                <span className="text-4xl font-bold text-neutral-900">04</span>
+              </div>
+              <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100 flex flex-col justify-between h-32">
+                <div className="flex justify-between items-start">
+                  <span className="text-emerald-600 font-bold text-xs uppercase tracking-wider">Points</span>
+                  <div className="w-5 h-5 bg-emerald-200 rounded-full"></div>
+                </div>
+                <span className="text-4xl font-bold text-neutral-900">1,240</span>
+              </div>
+              <div className="bg-purple-50 p-6 rounded-2xl border border-purple-100 flex flex-col justify-between h-32">
+                <div className="flex justify-between items-start">
+                  <span className="text-purple-600 font-bold text-xs uppercase tracking-wider">Saved</span>
+                  <div className="w-5 h-5 bg-purple-200 rounded-full"></div>
+                </div>
+                <span className="text-4xl font-bold text-neutral-900">12</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              {/* Recent Orders Mini */}
+              <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="font-bold text-neutral-900 flex items-center gap-2"><Package className="w-4 h-4 text-emerald-500" /> Recent Orders</h3>
+                  <button onClick={() => setActiveTab('orders')} className="text-xs font-bold text-emerald-600 hover:underline">View All</button>
+                </div>
+                <div className="space-y-4">
+                  {orders.slice(0, 2).map(order => (
+                    <div key={order.id} className="flex gap-4 p-3 rounded-xl bg-neutral-50 border border-neutral-100">
+                      <div className="w-16 h-16 bg-white rounded-lg overflow-hidden flex-shrink-0">
+                        <img src={order.items[0].image} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-bold text-neutral-900 line-clamp-1">{order.items[0].name}</h4>
+                        <p className="text-xs text-neutral-500">{order.id}</p>
+                        <div className="flex justify-between items-end mt-2">
+                          <span className="text-xs font-bold text-emerald-600">₹{order.total}</span>
+                          <span className="text-[10px] px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-bold uppercase">{order.status}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Default Address Mini */}
+              <div className="bg-white rounded-2xl border border-neutral-100 shadow-sm p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="font-bold text-neutral-900 flex items-center gap-2"><MapPin className="w-4 h-4 text-emerald-500" /> Saved Addresses</h3>
+                  <button onClick={() => setIsAddingAddress(true)} className="text-xs font-bold text-emerald-600 hover:underline">+ Add New</button>
+                </div>
+                <div className="bg-neutral-50 rounded-xl p-4 border border-neutral-100">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="bg-neutral-200 text-neutral-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Home</span>
+                  </div>
+                  <p className="text-sm font-bold text-neutral-900">4521 Westwood Avenue</p>
+                  <p className="text-xs text-neutral-500 mt-1">Apt 8B, San Francisco<br />CA 94112, United States</p>
+                  <button className="text-xs font-bold text-emerald-600 mt-3">EDIT AS PRIMARY</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* SECTION: MY ORDERS */}
         {activeTab === 'orders' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-neutral-900">My Orders</h2>
-              <div className="flex gap-2">
-                <div className="relative">
-                  <input type="text" placeholder="Search orders..." className="pl-9 pr-4 py-2 border border-neutral-200 rounded-lg text-sm w-64 focus:ring-2 focus:ring-blue-500 outline-none" />
-                  <Search className="absolute left-3 top-2.5 w-4 h-4 text-neutral-400" />
-                </div>
-                <button className="flex items-center gap-2 px-4 py-2 border border-neutral-200 rounded-lg text-sm font-medium hover:bg-neutral-50">
-                  <Filter className="w-4 h-4" /> Filters
-                </button>
+          <div className="space-y-6 animate-in fade-in duration-500">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <h2 className="text-2xl font-bold text-neutral-900">My Rental Orders History</h2>
+              <div className="flex bg-white rounded-lg p-1 border border-neutral-200 shadow-sm">
+                <button className="px-4 py-1.5 text-xs font-bold bg-emerald-50 text-emerald-600 rounded-md shadow-sm">Active</button>
+                <button className="px-4 py-1.5 text-xs font-bold text-neutral-500 hover:bg-neutral-50 rounded-md transition-colors">Past</button>
+                <button className="px-4 py-1.5 text-xs font-bold text-neutral-500 hover:bg-neutral-50 rounded-md transition-colors">Cancelled</button>
               </div>
             </div>
 
             <div className="space-y-4">
               {orders.length === 0 ? (
-                <div className="text-center py-20 bg-white rounded-xl border border-neutral-200">
+                <div className="text-center py-20 bg-white rounded-2xl border border-neutral-200 dashed">
                   <Package className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
                   <p className="text-neutral-500">No orders found.</p>
                 </div>
               ) : (
                 orders.map((order) => (
-                  <div key={order.id} className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                    <div className="p-4 bg-neutral-50 border-b border-neutral-100 flex flex-wrap gap-4 justify-between items-center text-sm">
-                      <div className="flex gap-6 text-neutral-500">
-                        <div>
-                          <span className="block text-xs uppercase font-bold text-neutral-400">Order Placed</span>
-                          <span className="text-neutral-900 font-medium">{order.date}</span>
-                        </div>
-                        <div>
-                          <span className="block text-xs uppercase font-bold text-neutral-400">Total</span>
-                          <span className="text-neutral-900 font-medium">${order.total.toFixed(2)}</span>
-                        </div>
-                        <div>
-                          <span className="block text-xs uppercase font-bold text-neutral-400">Order #</span>
-                          <span className="text-neutral-900 font-medium">{order.id}</span>
-                        </div>
+                  <div key={order.id} className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden hover:shadow-md transition-all p-5">
+                    <div className="flex flex-col md:flex-row gap-6">
+                      {/* Image */}
+                      <div className="w-full md:w-32 h-32 bg-neutral-100 rounded-xl flex-shrink-0 overflow-hidden relative group">
+                        <img src={order.items[0].image} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                       </div>
-                      <div className="flex gap-3">
-                        <Link
-                          to={`/orders/${order.id}`}
-                          className="text-blue-600 font-medium hover:underline text-sm"
-                        >
-                          View Details
-                        </Link>
-                        <span className="text-neutral-300">|</span>
-                        <Link
-                          to={`/invoices/INV-${order.id.split('-')[1]}`}
-                          className="text-blue-600 font-medium hover:underline text-sm"
-                        >
-                          Invoice
-                        </Link>
-                      </div>
-                    </div>
 
-                    <div className="p-6">
-                      <div className="flex flex-col md:flex-row gap-6">
-                        <div className="w-24 h-24 bg-neutral-100 rounded-lg flex-shrink-0 border border-neutral-200 overflow-hidden">
-                          <img src={order.items[0].image} alt="" className="w-full h-full object-cover" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-lg font-bold text-neutral-900 mb-1">{order.items[0].name}</h3>
-                          <p className="text-sm text-neutral-500 mb-4">Vendor: Rentalysis Official • Duration: {order.items[0].duration} Days</p>
-                          <div className="flex items-center gap-3">
-                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${order.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-neutral-100 text-neutral-600'
-                              }`}>
-                              <span className={`w-2 h-2 rounded-full ${order.status === 'Active' ? 'bg-green-600' : 'bg-neutral-500'}`}></span>
-                              {order.status}
-                            </span>
-                            {order.status === 'Active' && (
-                              <span className="text-xs text-orange-600 font-medium bg-orange-50 px-2 py-1 rounded">
-                                Return by {order.endDate}
-                              </span>
-                            )}
+                      {/* Content */}
+                      <div className="flex-1 flex flex-col justify-between">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase rounded leading-none">{order.status}</span>
+                              <span className="text-[10px] text-neutral-400 font-mono">{order.id}</span>
+                            </div>
+                            <h3 className="text-lg font-bold text-neutral-900 leading-tight mb-1">{order.items[0].name}</h3>
+                            <p className="text-xs text-neutral-500">Vendor: TechRental Solutions</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-neutral-400 uppercase font-bold tracking-wider mb-1">Total Rental</p>
+                            <p className="text-xl font-bold text-emerald-900">₹{order.total.toFixed(2)}</p>
                           </div>
                         </div>
-                        <div className="flex md:flex-col gap-3 justify-center">
-                          <button className="flex-1 px-4 py-2 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors whitespace-nowrap">
-                            Track Return
-                          </button>
-                          <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors whitespace-nowrap shadow-sm">
-                            Buy Again
-                          </button>
+
+                        <div className="border-t border-neutral-100 mt-4 pt-4 flex flex-wrap items-center justify-between gap-4">
+                          <div className="flex items-center gap-4 text-xs font-medium text-neutral-600">
+                            <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> Jan 12 - Jul 12</span>
+                            <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> 14 Days left</span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button className="flex items-center gap-1.5 px-3 py-1.5 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-600 hover:bg-neutral-50 transition-colors">
+                              <FileText className="w-3.5 h-3.5" /> Invoice
+                            </button>
+                            <button className="px-4 py-1.5 bg-sky-500 text-white rounded-lg text-xs font-bold hover:bg-sky-600 transition-colors shadow-sm shadow-sky-200">
+                              View Details
+                            </button>
+                            {order.status === 'Active' && (
+                              <button className="px-4 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 transition-colors shadow-sm shadow-amber-200">
+                                Track Return
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -165,47 +252,34 @@ const Profile = () => {
 
         {/* SECTION: TRANSACTIONS & INVOICES */}
         {activeTab === 'transactions' && (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-neutral-900">Invoices & Payments</h2>
-            <div className="bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden">
+          <div className="space-y-6 animate-in fade-in duration-500">
+            <h2 className="text-2xl font-bold text-neutral-900">Transactions & Invoices</h2>
+            <div className="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
+              {/* Keep existing table logic but styled cleanly */}
               <table className="w-full text-sm text-left">
                 <thead className="bg-neutral-50 border-b border-neutral-200 text-neutral-500">
                   <tr>
                     <th className="px-6 py-4 font-medium">Date</th>
                     <th className="px-6 py-4 font-medium">Description</th>
-                    <th className="px-6 py-4 font-medium">Order ID</th>
                     <th className="px-6 py-4 font-medium text-right">Amount</th>
-                    <th className="px-6 py-4 font-medium text-center">Receipt</th>
+                    <th className="px-6 py-4 font-medium text-center">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-100">
                   {orders.map((order) => (
                     <tr key={order.id} className="hover:bg-neutral-50">
-                      <td className="px-6 py-4">{order.date}</td>
-                      <td className="px-6 py-4 font-medium text-neutral-900">Rental Payment</td>
-                      <td className="px-6 py-4 font-mono text-neutral-500">{order.id}</td>
-                      <td className="px-6 py-4 text-right font-bold text-neutral-900">${order.total.toFixed(2)}</td>
+                      <td className="px-6 py-4 text-neutral-500">{order.date}</td>
+                      <td className="px-6 py-4 font-medium text-neutral-900">
+                        Rental Payment <span className="text-neutral-400 font-normal">for {order.id}</span>
+                      </td>
+                      <td className="px-6 py-4 text-right font-bold text-neutral-900">₹{order.total.toFixed(2)}</td>
                       <td className="px-6 py-4 text-center">
-                        <button className="text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-colors">
-                          <Download className="w-4 h-4" />
-                        </button>
+                        <span className="inline-flex items-center px-2 py-1 rounded text-xs font-bold bg-green-50 text-emerald-600 border border-green-100">
+                          Paid
+                        </span>
                       </td>
                     </tr>
                   ))}
-                  <tr className="hover:bg-neutral-50 bg-green-50/50">
-                    <td className="px-6 py-5 text-neutral-500">Oct 10, 2023</td>
-                    <td className="px-6 py-5 font-medium text-neutral-900 flex items-center gap-2">
-                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                      Security Deposit Refund
-                    </td>
-                    <td className="px-6 py-5 font-mono text-neutral-500">REF-99281</td>
-                    <td className="px-6 py-5 text-right font-bold text-green-700">+$100.00</td>
-                    <td className="px-6 py-5 text-center">
-                      <button className="text-blue-600 hover:bg-blue-50 p-2 rounded-lg transition-colors">
-                        <Download className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -214,41 +288,48 @@ const Profile = () => {
 
         {/* SECTION: ADDRESSES */}
         {activeTab === 'addresses' && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold text-neutral-900">Saved Addresses</h2>
-              <button className="px-4 py-2 bg-neutral-900 text-white text-sm font-bold rounded-lg hover:bg-neutral-800">
+              <button onClick={() => setIsAddingAddress(true)} className="px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-lg hover:bg-emerald-700 shadow-lg shadow-emerald-200">
                 + Add New Address
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white p-6 rounded-xl border border-blue-200 shadow-sm relative ring-1 ring-blue-100">
-                <div className="absolute top-4 right-4 bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wide">Default</div>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-neutral-100 rounded-lg">
-                    <MapPin className="w-5 h-5 text-neutral-600" />
-                  </div>
-                  <h3 className="font-bold text-neutral-900">Home Office</h3>
-                </div>
-                <p className="text-sm text-neutral-600 mb-4 leading-relaxed">
-                  Johnathan Smith<br />
-                  4521 Silicon Valley Rd, Suite 100<br />
-                  San Jose, CA 95134<br />
-                  United States
-                </p>
-                <div className="flex gap-3 text-sm font-medium">
-                  <button className="text-blue-600 hover:underline">Edit</button>
-                  <span className="text-neutral-300">|</span>
-                  <button className="text-red-600 hover:underline">Remove</button>
-                </div>
-              </div>
+              <div className="bg-white p-6 rounded-2xl border border-emerald-200 shadow-sm relative ring-1 ring-emerald-50">
+                <div className="absolute top-4 right-4 bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">Primary</div>
 
-              <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm border-dashed flex flex-col items-center justify-center text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group min-h-[200px]">
-                <div className="w-12 h-12 bg-neutral-100 rounded-full flex items-center justify-center mb-3 group-hover:bg-white group-hover:scale-110 transition-transform">
-                  <span className="text-2xl text-neutral-400 group-hover:text-blue-600 font-light">+</span>
-                </div>
-                <p className="font-bold text-neutral-900 group-hover:text-blue-700">Add New Address</p>
+                {editingAddress ? (
+                  <div className="space-y-3">
+                    <input type="text" name="name" value={addressForm.name} onChange={handleAddressChange} className="w-full text-sm font-bold border rounded px-2 py-1 mb-2" />
+                    <input type="text" name="fullName" value={addressForm.fullName} onChange={handleAddressChange} className="w-full text-sm border rounded px-2 py-1" />
+                    <input type="text" name="street" value={addressForm.street} onChange={handleAddressChange} className="w-full text-sm border rounded px-2 py-1" />
+                    <div className="flex gap-2">
+                      <input type="text" name="city" value={addressForm.city} onChange={handleAddressChange} className="w-full text-sm border rounded px-2 py-1" />
+                      <input type="text" name="state" value={addressForm.state} onChange={handleAddressChange} className="w-20 text-sm border rounded px-2 py-1" />
+                    </div>
+                    <button onClick={saveAddress} className="w-full bg-emerald-600 text-white text-sm font-bold py-1.5 rounded-lg hover:bg-emerald-700">Save</button>
+                    <button onClick={() => setEditingAddress(false)} className="w-full text-neutral-500 text-xs py-1">Cancel</button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-emerald-50 rounded-lg">
+                        <MapPin className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <h3 className="font-bold text-neutral-900 uppercase tracking-wide text-xs">{addressForm.name}</h3>
+                    </div>
+                    <p className="text-sm text-neutral-600 mb-6 leading-relaxed font-medium">
+                      {addressForm.street}<br />
+                      {addressForm.city}, {addressForm.state} {addressForm.zip}
+                    </p>
+                    <div className="flex gap-3 text-xs font-bold uppercase tracking-wide">
+                      <button onClick={() => setEditingAddress(true)} className="text-emerald-600 hover:underline">Edit</button>
+                      <button onClick={() => alert('Address removed!')} className="text-red-500 hover:underline">Remove</button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>

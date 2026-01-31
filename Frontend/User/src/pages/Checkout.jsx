@@ -47,13 +47,13 @@ const Checkout = () => {
 
           <div className="bg-white p-6 rounded-xl border border-neutral-200 shadow-sm">
             <h2 className="text-lg font-bold text-neutral-900 mb-4 flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-blue-600" /> Payment Method
+              <CreditCard className="w-5 h-5 text-emerald-600" /> Payment Method
             </h2>
 
             <div className="space-y-3">
-              <label className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-neutral-200 hover:border-neutral-300'}`}>
+              <label className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'card' ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600' : 'border-neutral-200 hover:border-neutral-300'}`}>
                 <div className="flex items-center gap-3">
-                  <input type="radio" name="payment" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} className="text-blue-600" />
+                  <input type="radio" name="payment" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} className="text-emerald-600 focus:ring-emerald-500" />
                   <span className="font-medium text-neutral-900">Credit Card</span>
                 </div>
                 <div className="flex gap-2">
@@ -64,24 +64,51 @@ const Checkout = () => {
 
               {paymentMethod === 'card' && (
                 <div className="p-4 bg-neutral-50 rounded-lg border border-neutral-200 space-y-3 animate-in fade-in slide-in-from-top-2">
-                  <input type="text" placeholder="Card number" className="w-full h-10 px-3 border border-neutral-200 rounded-lg bg-white" />
+                  <input type="text" placeholder="Card number" className="w-full h-10 px-3 border border-neutral-200 rounded-lg bg-white focus:outline-none focus:border-emerald-500" />
                   <div className="grid grid-cols-2 gap-3">
-                    <input type="text" placeholder="MM/YY" className="w-full h-10 px-3 border border-neutral-200 rounded-lg bg-white" />
-                    <input type="text" placeholder="CVC" className="w-full h-10 px-3 border border-neutral-200 rounded-lg bg-white" />
+                    <input type="text" placeholder="MM/YY" className="w-full h-10 px-3 border border-neutral-200 rounded-lg bg-white focus:outline-none focus:border-emerald-500" />
+                    <input type="text" placeholder="CVC" className="w-full h-10 px-3 border border-neutral-200 rounded-lg bg-white focus:outline-none focus:border-emerald-500" />
                   </div>
                 </div>
               )}
 
-              <label className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'apple' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-neutral-200 hover:border-neutral-300'}`}>
+              <label className={`flex items-start p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'upi' ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600' : 'border-neutral-200 hover:border-neutral-300'}`}>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <input type="radio" name="payment" checked={paymentMethod === 'upi'} onChange={() => setPaymentMethod('upi')} className="text-emerald-600 focus:ring-emerald-500" />
+                    <span className="font-medium text-neutral-900">UPI</span>
+                    <span className="text-xs bg-green-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">Fastest</span>
+                  </div>
+
+                  {paymentMethod === 'upi' && (
+                    <div className="pl-7 space-y-3 animate-in fade-in slide-in-from-top-2">
+                      <p className="text-xs text-neutral-500">Choose your preferred UPI app:</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {['Google Pay', 'PhonePe', 'Paytm', 'BHIM', 'Cred'].map((app) => (
+                          <button key={app} type="button" className="border border-neutral-200 bg-white rounded-lg py-2 px-1 text-xs font-medium hover:border-emerald-400 hover:text-emerald-600 transition-colors">
+                            {app}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="relative">
+                        <input type="text" placeholder="Enter UPI ID (e.g. name@okhdfcbank)" className="w-full h-9 px-3 border border-neutral-300 rounded-lg text-sm bg-white focus:outline-none focus:border-emerald-500" />
+                      </div>
+                      <button className="w-full h-9 bg-neutral-900 text-white rounded-lg text-xs font-bold hover:bg-black">Verify & Pay</button>
+                    </div>
+                  )}
+                </div>
+              </label>
+
+              <label className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'apple' ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600' : 'border-neutral-200 hover:border-neutral-300'}`}>
                 <div className="flex items-center gap-3">
-                  <input type="radio" name="payment" checked={paymentMethod === 'apple'} onChange={() => setPaymentMethod('apple')} className="text-blue-600" />
+                  <input type="radio" name="payment" checked={paymentMethod === 'apple'} onChange={() => setPaymentMethod('apple')} className="text-emerald-600 focus:ring-emerald-500" />
                   <span className="font-medium text-neutral-900 flex items-center gap-2"><Apple className="w-4 h-4" /> Apple Pay</span>
                 </div>
               </label>
 
-              <label className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'paypal' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-neutral-200 hover:border-neutral-300'}`}>
+              <label className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'paypal' ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600' : 'border-neutral-200 hover:border-neutral-300'}`}>
                 <div className="flex items-center gap-3">
-                  <input type="radio" name="payment" checked={paymentMethod === 'paypal'} onChange={() => setPaymentMethod('paypal')} className="text-blue-600" />
+                  <input type="radio" name="payment" checked={paymentMethod === 'paypal'} onChange={() => setPaymentMethod('paypal')} className="text-emerald-600 focus:ring-emerald-500" />
                   <span className="font-medium text-neutral-900">PayPal</span>
                 </div>
               </label>
@@ -105,21 +132,21 @@ const Checkout = () => {
             <div className="space-y-3 mb-6 pb-6 border-b border-neutral-200">
               <div className="flex justify-between text-sm">
                 <span className="text-neutral-500">Monthly Rental</span>
-                <span className="font-medium text-neutral-900">$89.80</span>
+                <span className="font-medium text-neutral-900">₹89.80</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-neutral-500">Delivery & Setup</span>
-                <span className="font-medium text-neutral-900">$25.80</span>
+                <span className="font-medium text-neutral-900">₹25.80</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-neutral-500">Insurance Coverage</span>
-                <span className="font-medium text-neutral-900">$10.90</span>
+                <span className="font-medium text-neutral-900">₹10.90</span>
               </div>
             </div>
 
             <div className="flex justify-between items-end mb-6">
               <span className="font-bold text-neutral-900">Total Due Today</span>
-              <span className="font-bold text-xl text-blue-600">$126.50</span>
+              <span className="font-bold text-xl text-emerald-600">₹126.50</span>
             </div>
 
             <p className="text-xs text-neutral-400 mb-4">
@@ -128,7 +155,7 @@ const Checkout = () => {
 
             <button
               onClick={() => navigate('/orders/ORD-2023-8821')}
-              className="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
+              className="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-200"
             >
               Place Order & Pay
             </button>

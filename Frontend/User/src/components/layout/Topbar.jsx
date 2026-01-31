@@ -3,10 +3,17 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Search, ShoppingCart, Bell, User, Menu, LogOut, Package, MapPin } from 'lucide-react'
 import { cartItems } from '../../mock/data'
+import logo from '../../assets/logo.png'
 
 const Topbar = () => {
   const navigate = useNavigate()
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+
+  const handleLogout = () => {
+    // Add any clear session logic here if needed
+    setIsProfileOpen(false)
+    navigate('/login')
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-neutral-200 z-50 shadow-sm">
@@ -14,8 +21,7 @@ const Topbar = () => {
 
         {/* Left: Logo */}
         <Link to="/home" className="flex items-center gap-2 flex-shrink-0">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">R</div>
-          <span className="text-xl font-bold tracking-tight text-neutral-900 hidden sm:block">Rentalysis</span>
+          <img src={logo} alt="Rentalysis" className="h-10 md:h-12 w-auto object-contain" />
         </Link>
 
         {/* Center: Search */}
@@ -33,9 +39,7 @@ const Topbar = () => {
         {/* Right: Actions */}
         <div className="flex items-center gap-2 sm:gap-6 flex-shrink-0">
 
-          <Link to="/products" className="hidden lg:flex items-center gap-2 text-sm font-medium text-neutral-700 hover:text-blue-600 transition-colors">
-            Browse
-          </Link>
+
 
           {/* Cart */}
           <Link to="/cart" className="relative p-2 text-neutral-600 hover:bg-neutral-100 rounded-full transition-colors group">
@@ -68,8 +72,8 @@ const Topbar = () => {
                 />
               </div>
               <div className="text-left hidden sm:block">
-                <p className="text-xs font-bold text-neutral-900">John Doe</p>
-                <p className="text-[10px] text-neutral-500">Customer</p>
+                <p className="text-xs font-bold text-neutral-900">{import.meta.env.VITE_USER_NAME}</p>
+                <p className="text-[10px] text-neutral-500">{import.meta.env.VITE_USER_ROLE}</p>
               </div>
               {/* Mobile Menu Icon fallback */}
               <Menu className="w-4 h-4 text-neutral-400 sm:hidden" />
@@ -78,8 +82,8 @@ const Topbar = () => {
             {isProfileOpen && (
               <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-neutral-100 py-2 animate-in fade-in slide-in-from-top-2">
                 <div className="px-4 py-3 border-b border-neutral-100 mb-1">
-                  <p className="text-sm font-bold text-neutral-900">Johnathan Smith</p>
-                  <p className="text-xs text-neutral-500">j.smith@rentals.com</p>
+                  <p className="text-sm font-bold text-neutral-900">{import.meta.env.VITE_USER_NAME}</p>
+                  <p className="text-xs text-neutral-500">{import.meta.env.VITE_USER_EMAIL}</p>
                 </div>
 
                 <Link
@@ -105,7 +109,10 @@ const Topbar = () => {
                 </Link>
 
                 <div className="border-t border-neutral-100 mt-1 pt-1">
-                  <button className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 text-left"
+                  >
                     <LogOut className="w-4 h-4" /> Logout
                   </button>
                 </div>
