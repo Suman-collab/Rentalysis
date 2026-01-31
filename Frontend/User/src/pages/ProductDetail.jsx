@@ -1,7 +1,7 @@
 // FILE: src/pages/ProductDetail.jsx
 import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Calendar, ShoppingCart, Star, Shield, Truck, Clock } from 'lucide-react'
+import { Calendar, ShoppingCart, Star, Shield, ArrowLeft, Heart, Share2, Info } from 'lucide-react'
 import { products } from '../mock/data'
 
 const ProductDetail = () => {
@@ -11,152 +11,186 @@ const ProductDetail = () => {
   const [activeImage, setActiveImage] = useState(0)
   const [duration, setDuration] = useState('day')
 
+  // Calculate prices logic
   const pricing = {
     day: product.price,
-    week: product.price * 5, // Discount
-    month: product.price * 20
+    week: Math.round(product.price * 5.5),
+    month: Math.round(product.price * 22)
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-sm">
-      <div className="grid grid-cols-1 lg:grid-cols-2">
-        {/* Left: Image Gallery */}
-        <div className="p-6 bg-neutral-50 border-b lg:border-b-0 lg:border-r border-neutral-200 flex flex-col items-center justify-center">
-          <div className="relative w-full aspect-square max-w-lg mb-4 rounded-xl overflow-hidden bg-white border border-neutral-200 shadow-sm">
+    <div className="max-w-6xl mx-auto pb-12">
+      {/* Breadcrumb / Nav */}
+      <nav className="flex items-center justify-between mb-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" /> Back to Listings
+        </button>
+        <div className="flex items-center gap-3">
+          <button className="p-2 text-neutral-500 hover:bg-neutral-100 rounded-full transition-colors">
+            <Share2 className="w-4 h-4" />
+          </button>
+          <button className="p-2 text-neutral-500 hover:bg-neutral-100 rounded-full transition-colors">
+            <Heart className="w-4 h-4" />
+          </button>
+        </div>
+      </nav>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left: Images */}
+        <div className="lg:col-span-7 space-y-4">
+          <div className="aspect-[4/3] bg-white rounded-2xl border border-neutral-200 overflow-hidden shadow-sm relative">
             <img
               src={product.image}
               alt={product.name}
-              className="w-full h-full object-contain p-4"
+              className="w-full h-full object-contain p-8"
             />
+            <div className="absolute top-4 left-4">
+              <span className="bg-neutral-900/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold">
+                High Demand
+              </span>
+            </div>
           </div>
-          <div className="flex gap-4">
-            {[0, 1, 2].map((i) => (
+          <div className="grid grid-cols-4 gap-4">
+            {[0, 1, 2, 3].map((i) => (
               <div
                 key={i}
                 onClick={() => setActiveImage(i)}
-                className={`w-20 h-20 rounded-lg border-2 cursor-pointer overflow-hidden bg-white ${activeImage === i ? 'border-blue-600' : 'border-neutral-200 hover:border-neutral-400'
+                className={`aspect-square rounded-xl border-2 cursor-pointer overflow-hidden bg-white transition-all ${activeImage === i
+                    ? 'border-neutral-900 ring-2 ring-neutral-900/10'
+                    : 'border-neutral-200 hover:border-neutral-300'
                   }`}
               >
-                <img src={product.image} className="w-full h-full object-cover opacity-80" />
+                <img src={product.image} className="w-full h-full object-cover p-2" />
               </div>
             ))}
           </div>
+
+          <div className="pt-8">
+            <h3 className="font-bold text-lg text-neutral-900 mb-4">Product Description</h3>
+            <p className="text-neutral-600 leading-relaxed text-sm lg:text-base">
+              {product.description} Experience top-tier performance with this professional-grade equipment.
+              Perfect for short-term projects or trying before you buy. Maintained to the highest standards
+              and thoroughly cleaned before every rental.
+            </p>
+
+            <div className="mt-6 grid grid-cols-2 gap-4">
+              <div className="p-4 bg-neutral-50 rounded-xl border border-neutral-100 flex items-start gap-3">
+                <Shield className="w-5 h-5 text-blue-600 mt-0.5" />
+                <div>
+                  <h4 className="font-bold text-sm text-neutral-900">Damage Protection</h4>
+                  <p className="text-xs text-neutral-500 mt-1">Full coverage options available.</p>
+                </div>
+              </div>
+              <div className="p-4 bg-neutral-50 rounded-xl border border-neutral-100 flex items-start gap-3">
+                <Info className="w-5 h-5 text-blue-600 mt-0.5" />
+                <div>
+                  <h4 className="font-bold text-sm text-neutral-900">Expert Support</h4>
+                  <p className="text-xs text-neutral-500 mt-1">24/7 technical assistance included.</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Right: Info & Actions */}
-        <div className="p-8 lg:p-10 flex flex-col h-full">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-neutral-900 mb-2">{product.name}</h1>
-            <div className="flex items-center gap-4 text-sm">
-              <span className="bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded font-semibold">{product.category}</span>
-              <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                <span className="font-semibold">{product.rating}</span>
-                <span className="text-neutral-500">({product.reviews} reviews)</span>
-              </div>
-            </div>
-          </div>
-
-          <p className="text-neutral-600 mb-8 leading-relaxed">
-            {product.description}
-          </p>
-
-          <div className="mb-8">
-            <h3 className="text-sm font-bold text-neutral-900 uppercase tracking-wide mb-3">Rental Pricing</h3>
-            <div className="grid grid-cols-3 gap-4">
-              {['day', 'week', 'month'].map((type) => (
-                <button
-                  key={type}
-                  onClick={() => setDuration(type)}
-                  className={`border rounded-xl p-4 text-center transition-all ${duration === type
-                      ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600'
-                      : 'border-neutral-200 hover:border-blue-300'
-                    }`}
-                >
-                  <span className="block text-xl font-bold text-neutral-900">${pricing[type]}</span>
-                  <span className="text-xs text-neutral-500 font-medium capitalize">Per {type}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-8 p-4 bg-neutral-50 rounded-xl border border-neutral-100 space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <label className="text-xs font-bold text-neutral-500 uppercase mb-1 block">Start Date</label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-neutral-400" />
-                  <input
-                    type="date"
-                    className="w-full h-10 pl-9 pr-3 rounded-lg border border-neutral-300 bg-white text-sm focus:border-blue-500 focus:outline-none"
-                  />
+        {/* Right: Booking Card */}
+        <div className="lg:col-span-5">
+          <div className="bg-white p-6 md:p-8 rounded-2xl border border-neutral-200 shadow-xl shadow-neutral-100/50 sticky top-24">
+            <div className="mb-6">
+              <p className="text-sm font-bold text-blue-600 mb-2">{product.category}</p>
+              <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-2 leading-tight">{product.name}</h1>
+              <div className="flex items-center gap-2 text-sm text-neutral-500">
+                <div className="flex text-yellow-400">
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
+                  <Star className="w-4 h-4 fill-current" />
                 </div>
-              </div>
-              <div className="flex-1">
-                <label className="text-xs font-bold text-neutral-500 uppercase mb-1 block">End Date</label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-neutral-400" />
-                  <input
-                    type="date"
-                    className="w-full h-10 pl-9 pr-3 rounded-lg border border-neutral-300 bg-white text-sm focus:border-blue-500 focus:outline-none"
-                  />
-                </div>
+                <span>{product.rating} ({product.reviews} reviews)</span>
               </div>
             </div>
-          </div>
 
-          <div className="mt-auto space-y-4">
-            <div className="flex justify-between items-center mb-4">
+            <div className="space-y-6">
+              {/* Pricing Tabs */}
               <div>
-                <span className="text-3xl font-bold text-neutral-900">${pricing[duration]}</span>
-                <span className="text-neutral-500 text-sm"> Total for 1 {duration}</span>
+                <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wide mb-3">Select Pricing Plan</label>
+                <div className="grid grid-cols-3 gap-3">
+                  {['day', 'week', 'month'].map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setDuration(p)}
+                      className={`relative p-3 rounded-xl border text-center transition-all ${duration === p
+                          ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600 pb-4'
+                          : 'border-neutral-200 hover:border-neutral-300'
+                        }`}
+                    >
+                      <span className="block text-xl font-bold text-neutral-900">${pricing[p]}</span>
+                      <span className="text-xs font-medium text-neutral-500 capitalize">/ {p}</span>
+                      {duration === p && (
+                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-blue-600 rotate-45 transform translate-y-1/2 rounded-[2px]" />
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <button className="w-10 h-10 rounded-lg border border-neutral-300 flex items-center justify-center hover:bg-neutral-50">-</button>
-                <span className="text-lg font-bold w-4 text-center">1</span>
-                <button className="w-10 h-10 rounded-lg border border-neutral-300 flex items-center justify-center hover:bg-neutral-50">+</button>
+
+              {/* Date Input */}
+              <div className="p-4 rounded-xl border border-neutral-200 bg-neutral-50/50 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-500 mb-1.5">Start Date</label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-neutral-400 pointer-events-none" />
+                      <input
+                        type="date"
+                        className="w-full h-10 pl-9 pr-3 rounded-lg border border-neutral-200 bg-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-neutral-500 mb-1.5">End Date</label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-neutral-400 pointer-events-none" />
+                      <input
+                        type="date"
+                        className="w-full h-10 pl-9 pr-3 rounded-lg border border-neutral-200 bg-white text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-sm pt-2">
+                  <span className="text-neutral-500">Duration</span>
+                  <span className="font-bold text-neutral-900">0 Days</span>
+                </div>
+              </div>
+
+              {/* Total & Action */}
+              <div className="pt-6 border-t border-neutral-100">
+                <div className="flex items-end justify-between mb-6">
+                  <div>
+                    <span className="block text-sm text-neutral-500 mb-1">Total Estimated Cost</span>
+                    <span className="text-3xl font-bold text-neutral-900 leading-none">$0.00</span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => navigate('/cart')}
+                    className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-lg shadow-lg shadow-blue-200 flex items-center justify-center gap-2 transition-transform active:scale-95"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    Add to Cart
+                  </button>
+                  <p className="text-xs text-center text-neutral-400">
+                    You won't be charged yet. Availability verified at checkout.
+                  </p>
+                </div>
               </div>
             </div>
-
-            <button
-              onClick={() => navigate('/cart')}
-              className="w-full h-14 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-3 shadow-lg shadow-blue-200"
-            >
-              <ShoppingCart className="w-5 h-5" />
-              Add to Quote
-            </button>
-            <p className="text-xs text-center text-neutral-500">No payment required yet. Request a formal quote.</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer Info */}
-      <div className="bg-neutral-50 border-t border-neutral-200 p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="flex items-start gap-3">
-          <div className="p-2 bg-white rounded-lg shadow-sm">
-            <Shield className="w-5 h-5 text-blue-600" />
-          </div>
-          <div>
-            <h4 className="font-bold text-neutral-900 text-sm">Insurance Included</h4>
-            <p className="text-xs text-neutral-500 mt-1">Every rental is covered against accidental damage.</p>
-          </div>
-        </div>
-        <div className="flex items-start gap-3">
-          <div className="p-2 bg-white rounded-lg shadow-sm">
-            <Truck className="w-5 h-5 text-blue-600" />
-          </div>
-          <div>
-            <h4 className="font-bold text-neutral-900 text-sm">Same-Day Delivery</h4>
-            <p className="text-xs text-neutral-500 mt-1">Available for metro areas if ordered by 2 PM.</p>
-          </div>
-        </div>
-        <div className="flex items-start gap-3">
-          <div className="p-2 bg-white rounded-lg shadow-sm">
-            <Clock className="w-5 h-5 text-blue-600" />
-          </div>
-          <div>
-            <h4 className="font-bold text-neutral-900 text-sm">Flexible Extensions</h4>
-            <p className="text-xs text-neutral-500 mt-1">Easily extend your rental period from the dashboard.</p>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom
 import Sidebar from './components/layout/Sidebar'
 import Topbar from './components/layout/Topbar'
 import Home from './pages/Home'
+import Dashboard from './pages/Dashboard'
 import Products from './pages/Products'
 import ProductDetail from './pages/ProductDetail'
 import Cart from './pages/Cart'
@@ -13,6 +14,7 @@ import Invoice from './pages/Invoice'
 import Profile from './pages/Profile'
 import Login from './pages/auth/Login'
 import Signup from './pages/auth/Signup'
+import Error404 from './pages/Error404'
 
 const Layout = () => {
   return (
@@ -37,14 +39,18 @@ const App = () => {
 
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/orders" element={<Navigate to="/profile" replace />} /> {/* Redirect for consistency or list view */}
+          <Route path="/orders" element={<Navigate to="/profile" replace />} />
           <Route path="/orders/:id" element={<OrderTrack />} />
           <Route path="/invoices/:id" element={<Invoice />} />
           <Route path="/profile" element={<Profile />} />
+
+          {/* Catch-all for undefined routes */}
+          <Route path="*" element={<Error404 />} />
         </Route>
       </Routes>
     </BrowserRouter>
