@@ -11,24 +11,14 @@ const Products = () => {
   // Filter States
   const [brandSearch, setBrandSearch] = useState('')
   const [selectedBrands, setSelectedBrands] = useState([])
-  const [selectedColor, setSelectedColor] = useState(null)
   const [selectedDuration, setSelectedDuration] = useState('All Durations')
-  const [priceRange, setPriceRange] = useState([10, 10000])
+  const [priceRange, setPriceRange] = useState([10, 1000])
 
   const categories = ['All', 'Electronics', 'Furniture', 'Tools', 'Audio', 'Camping', 'Fitness']
 
   const brands = ['Sony', 'Canon', 'Nikon', 'DJI', 'Apple', 'Samsung', 'Bose', 'Makita']
-  const colors = [
-    { name: 'Black', hex: '#1F2937' },
-    { name: 'Purple', hex: '#A855F7' },
-    { name: 'Brown', hex: '#78350F' },
-    { name: 'Orange', hex: '#F97316' },
-    { name: 'White', hex: '#FFFFFF', border: true },
-    { name: 'Blue', hex: '#3B82F6' },
-    { name: 'Red', hex: '#EF4444' },
-    { name: 'Green', hex: '#22C55E' },
-  ]
-  const durations = ['1 Month', '6 Months', '1 Year', '2 Years', '3 Years']
+  // Colors removed as per request
+  const durations = ['All Durations', 'Day', 'Week', 'Month']
 
   const toggleBrand = (brand) => {
     if (selectedBrands.includes(brand)) {
@@ -40,10 +30,12 @@ const Products = () => {
 
   // Filter Logic
   const filteredProducts = products.filter(p =>
+    p.status === 'Available' &&
     (selectedCategory === 'All' || p.category === selectedCategory) &&
     (selectedBrands.length === 0 || (p.brand && selectedBrands.includes(p.brand))) &&
+    (selectedDuration === 'All Durations' || (p.availablePlans || ['day', 'week', 'month']).includes(selectedDuration.toLowerCase())) &&
+    (p.price >= priceRange[0] && p.price <= priceRange[1]) &&
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
-    // Add price/color/duration filtering logic here if mock data supported it
   )
 
   return (
@@ -81,14 +73,67 @@ const Products = () => {
               <div className="mb-4">
                 <span className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">₹{priceRange[0]} - ₹{priceRange[1]}</span>
               </div>
-              <input
-                type="range"
-                min="10"
-                max="10000"
-                value={priceRange[1]}
-                onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                className="w-full h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer accent-neutral-900"
-              />
+              <div className="relative h-2 bg-neutral-200 rounded-lg mt-4 mb-2">
+                <div
+                  className="absolute h-full bg-neutral-900 rounded-lg"
+                  style={{
+                    left: `${(priceRange[0] / 1000) * 100}%`,
+                    right: `${100 - (priceRange[1] / 1000) * 100}%`
+                  }}
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="1000"
+                  value={priceRange[0]}
+                  onChange={(e) => {
+                    const val = Math.min(parseInt(e.target.value), priceRange[1] - 50);
+                    setPriceRange([val, priceRange[1]]);
+                  }}
+                  className="absolute top-0 left-0 w-full h-full bg-transparent appearance-none pointer-events-none"
+                  style={{ zIndex: 30 }}
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="1000"
+                  value={priceRange[1]}
+                  onChange={(e) => {
+                    const val = Math.max(parseInt(e.target.value), priceRange[0] + 50);
+                    setPriceRange([priceRange[0], val]);
+                  }}
+                  className="absolute top-0 left-0 w-full h-full bg-transparent appearance-none pointer-events-none"
+                  style={{ zIndex: 40 }}
+                />
+                <style dangerouslySetInnerHTML={{
+                  __html: `
+                  input[type=range]::-webkit-slider-thumb {
+                    pointer-events: auto;
+                    -webkit-appearance: none;
+                    height: 16px;
+                    width: 16px;
+                    border-radius: 50%;
+                    background: #171717;
+                    cursor: pointer;
+                    margin-top: 0px; 
+                    position: relative;
+                    z-index: 50;
+                    box-shadow: 0 0 0 2px white;
+                  }
+                  input[type=range]::-moz-range-thumb {
+                    pointer-events: auto;
+                    height: 16px;
+                    width: 16px;
+                    border-radius: 50%;
+                    background: #171717;
+                    cursor: pointer;
+                    border: none;
+                    position: relative;
+                    z-index: 50;
+                    box-shadow: 0 0 0 2px white;
+                  }
+                `}} />
+              </div>
               <div className="flex justify-between text-xs text-neutral-400 font-medium uppercase tracking-wide mt-2">
                 <span>Min</span>
                 <span>Max</span>
@@ -115,43 +160,30 @@ const Products = () => {
               </div>
               <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                 {brands.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase())).map(brand => (
-                  <label key={brand} className="flex items-center gap-3 cursor-pointer group hover:bg-neutral-50 p-1.5 rounded transition-colors">
+                  <div
+                    key={brand}
+                    onClick={() => toggleBrand(brand)}
+                    className="flex items-center gap-3 cursor-pointer group hover:bg-neutral-50 p-1.5 rounded transition-colors w-full"
+                  >
                     <div
-                      onClick={() => toggleBrand(brand)}
                       className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedBrands.includes(brand) ? 'bg-neutral-900 border-neutral-900' : 'bg-white border-neutral-300 group-hover:border-neutral-400'}`}
                     >
                       {selectedBrands.includes(brand) && <Check className="w-3 h-3 text-white" />}
                     </div>
                     <span className={`text-sm font-medium tracking-wide ${selectedBrands.includes(brand) ? 'text-neutral-900' : 'text-neutral-600'}`}>{brand}</span>
-                  </label>
+                  </div>
                 ))}
               </div>
             </div>
 
-            {/* Color Filter */}
-            <div className="bg-white p-5 rounded-2xl shadow-sm border border-neutral-200">
-              <h3 className="font-bold text-neutral-900 mb-4">Color</h3>
-              <div className="flex flex-wrap gap-3">
-                {colors.map((color) => (
-                  <button
-                    key={color.name}
-                    onClick={() => setSelectedColor(selectedColor === color.name ? null : color.name)}
-                    className={`w-8 h-8 rounded-full transition-transform hover:scale-110 flex items-center justify-center relative ${selectedColor === color.name ? 'ring-2 ring-offset-2 ring-neutral-900' : ''}`}
-                    style={{ backgroundColor: color.hex, border: color.border ? '1px solid #E5E5E5' : 'none' }}
-                    title={color.name}
-                  >
-                    {selectedColor === color.name && <Check className={`w-4 h-4 ${color.name === 'White' ? 'text-black' : 'text-white'}`} />}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {/* Color Filter Removed */}
 
             {/* Duration Filter */}
             <div className="bg-white p-5 rounded-2xl shadow-sm border border-neutral-200">
               <h3 className="font-bold text-neutral-900 mb-4">Duration</h3>
               <div className="space-y-2">
                 {durations.map((duration) => (
-                  <label key={duration} className="flex items-center gap-3 cursor-pointer group">
+                  <label key={duration} className="flex items-center gap-3 cursor-pointer group w-full hover:bg-neutral-50 p-1 rounded">
                     <input
                       type="radio"
                       name="duration"
@@ -232,10 +264,19 @@ const Products = () => {
                     <div className="mt-auto pt-4 border-t border-neutral-100 flex items-end justify-between">
                       <div>
                         <p className="text-xs text-neutral-500 mb-0.5">Rent from</p>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-xl font-bold text-neutral-900">₹{product.price}</span>
-                          <span className="text-sm font-medium text-neutral-500">/{product.unit}</span>
-                        </div>
+                        {(() => {
+                          const plan = product.availablePlans ? product.availablePlans[0] : 'day'
+                          let displayPrice = product.price
+                          if (plan === 'week') displayPrice = Math.round(product.price * 5.5)
+                          if (plan === 'month') displayPrice = Math.round(product.price * 22)
+
+                          return (
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-xl font-bold text-neutral-900">₹{displayPrice}</span>
+                              <span className="text-sm font-medium text-neutral-500">/{plan}</span>
+                            </div>
+                          )
+                        })()}
                       </div>
                       <button className="px-4 py-2 bg-neutral-900 text-white text-sm font-medium rounded-lg opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                         View Details
