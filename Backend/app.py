@@ -1,5 +1,9 @@
 from fastapi import FastAPI
+from db.main import init_db
 from contextlib import asynccontextmanager
+from utils.errors import register_all_errors
+from auth.routes import auth_router
+
 
 
 
@@ -8,7 +12,7 @@ async def life_span(
     app: FastAPI
 ):
     print(f'Server is starting...')
-
+    await init_db()
     yield
     print(f'Server has been stopped...')
     
@@ -23,3 +27,16 @@ app = FastAPI(
     },
     lifespan=life_span
 )
+
+
+app.include_router(
+    router=auth_router,
+    prefix='/auth',
+    tags=['Auth']
+)
+@app.get('/')
+def greet():
+    return {'message' : 'Welcome to Rentalysis'}
+
+
+register_all_errors(app)
