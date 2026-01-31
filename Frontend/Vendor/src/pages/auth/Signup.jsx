@@ -14,7 +14,7 @@ const Signup = () => {
     <div className="min-h-screen flex items-center justify-center bg-neutral-50 px-4">
       <div className="max-w-md w-full bg-white p-8 rounded-lg border border-neutral-200 shadow-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-neutral-900">Become a Vendor</h1>
+          <h1 className="text-2xl font-bold text-neutral-900">Become a Vendor!</h1>
           <p className="text-neutral-500 mt-2">Start your business journey with Rentalysis</p>
         </div>
 

@@ -59,8 +59,8 @@ const ProductDetail = () => {
                 key={i}
                 onClick={() => setActiveImage(i)}
                 className={`aspect-square rounded-xl border-2 cursor-pointer overflow-hidden bg-white transition-all ${activeImage === i
-                    ? 'border-neutral-900 ring-2 ring-neutral-900/10'
-                    : 'border-neutral-200 hover:border-neutral-300'
+                  ? 'border-neutral-900 ring-2 ring-neutral-900/10'
+                  : 'border-neutral-200 hover:border-neutral-300'
                   }`}
               >
                 <img src={product.image} className="w-full h-full object-cover p-2" />
@@ -123,11 +123,11 @@ const ProductDetail = () => {
                       key={p}
                       onClick={() => setDuration(p)}
                       className={`relative p-3 rounded-xl border text-center transition-all ${duration === p
-                          ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600 pb-4'
-                          : 'border-neutral-200 hover:border-neutral-300'
+                        ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600 pb-4'
+                        : 'border-neutral-200 hover:border-neutral-300'
                         }`}
                     >
-                      <span className="block text-xl font-bold text-neutral-900">${pricing[p]}</span>
+                      <span className="block text-xl font-bold text-neutral-900">₹{pricing[p]}</span>
                       <span className="text-xs font-medium text-neutral-500 capitalize">/ {p}</span>
                       {duration === p && (
                         <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-blue-600 rotate-45 transform translate-y-1/2 rounded-[2px]" />
@@ -173,7 +173,7 @@ const ProductDetail = () => {
                 <div className="flex items-end justify-between mb-6">
                   <div>
                     <span className="block text-sm text-neutral-500 mb-1">Total Estimated Cost</span>
-                    <span className="text-3xl font-bold text-neutral-900 leading-none">$0.00</span>
+                    <span className="text-3xl font-bold text-neutral-900 leading-none">₹0.00</span>
                   </div>
                 </div>
 

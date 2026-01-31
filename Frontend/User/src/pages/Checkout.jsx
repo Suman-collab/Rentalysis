@@ -6,6 +6,13 @@ import { ShieldCheck, CreditCard, Wallet, Apple, User, MapPin, ArrowLeft } from 
 const Checkout = () => {
   const navigate = useNavigate()
   const [paymentMethod, setPaymentMethod] = useState('card')
+  const [selectedCardId, setSelectedCardId] = useState('')
+
+  // Mock saved cards (in a real app, strict sync with profile data)
+  const savedCards = [
+    { id: 1, type: 'Visa', last4: '4242', expiry: '12/28' },
+    { id: 2, type: 'Mastercard', last4: '8899', expiry: '09/25' }
+  ]
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -61,6 +68,43 @@ const Checkout = () => {
                   <div className="w-8 h-5 bg-neutral-200 rounded"></div>
                 </div>
               </label>
+
+              {/* Saved Card Option */}
+              <label className={`flex items-center justify-between p-4 border rounded-xl cursor-pointer transition-all ${paymentMethod === 'saved-card' ? 'border-emerald-600 bg-emerald-50/50 ring-1 ring-emerald-600' : 'border-neutral-200 hover:border-neutral-300'}`}>
+                <div className="flex items-center gap-3">
+                  <input type="radio" name="payment" checked={paymentMethod === 'saved-card'} onChange={() => setPaymentMethod('saved-card')} className="text-emerald-600 focus:ring-emerald-500" />
+                  <span className="font-medium text-neutral-900">Pay with Saved Card</span>
+                </div>
+                <CreditCard className="w-5 h-5 text-neutral-400" />
+              </label>
+
+              {paymentMethod === 'saved-card' && (
+                <div className="p-4 bg-neutral-50 rounded-lg border border-neutral-200 space-y-3 animate-in fade-in slide-in-from-top-2">
+                  <p className="text-sm font-medium text-neutral-900 mb-2">Select a card</p>
+                  <div className="space-y-2">
+                    {savedCards.map(card => (
+                      <label key={card.id} className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer bg-white hover:border-emerald-500 transition-colors ${selectedCardId === card.id ? 'border-emerald-500 ring-1 ring-emerald-500' : 'border-neutral-200'}`}>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="savedCard"
+                            checked={selectedCardId === card.id}
+                            onChange={() => setSelectedCardId(card.id)}
+                            className="text-emerald-600 focus:ring-emerald-500"
+                          />
+                          <div>
+                            <p className="text-sm font-bold text-neutral-900">{card.type} ending in {card.last4}</p>
+                            <p className="text-xs text-neutral-500">Expires {card.expiry}</p>
+                          </div>
+                        </div>
+                        <div className="text-sm font-mono font-bold text-neutral-400">
+                          **** {card.last4}
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {paymentMethod === 'card' && (
                 <div className="p-4 bg-neutral-50 rounded-lg border border-neutral-200 space-y-3 animate-in fade-in slide-in-from-top-2">
@@ -144,6 +188,20 @@ const Checkout = () => {
               </div>
             </div>
 
+            {/* Coupon Code Section */}
+            <div className="mb-6 pb-6 border-b border-neutral-200">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Coupon Code"
+                  className="flex-1 h-10 px-3 rounded-lg border border-neutral-200 bg-neutral-50 text-sm focus:outline-none focus:border-blue-500 transition-colors uppercase"
+                />
+                <button className="px-4 h-10 bg-neutral-900 text-white text-sm font-bold rounded-lg hover:bg-black transition-colors">
+                  Apply
+                </button>
+              </div>
+            </div>
+
             <div className="flex justify-between items-end mb-6">
               <span className="font-bold text-neutral-900">Total Due Today</span>
               <span className="font-bold text-xl text-emerald-600">₹126.50</span>
@@ -157,7 +215,7 @@ const Checkout = () => {
               onClick={() => navigate('/orders/ORD-2023-8821')}
               className="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-200"
             >
-              Place Order & Pay
+              Place Order & Checkout
             </button>
           </div>
         </div>

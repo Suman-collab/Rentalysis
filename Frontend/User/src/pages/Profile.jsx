@@ -18,9 +18,31 @@ const Profile = () => {
       state: 'CA',
       zip: '95134',
       country: 'United States',
-      isDefault: true
     }
   ])
+
+  // State for saved cards
+  const [savedCards, setSavedCards] = useState([
+    { id: 1, type: 'Visa', last4: '4242', expiry: '12/28', holder: 'John Doe' },
+    { id: 2, type: 'Mastercard', last4: '8899', expiry: '09/25', holder: 'John Doe' }
+  ])
+  const [isAddingCard, setIsAddingCard] = useState(false)
+  const [cardForm, setCardForm] = useState({ number: '', expiry: '', cvc: '', holder: '' })
+
+  const handleAddCard = () => {
+    // Mock validation and add
+    const last4 = cardForm.number.slice(-4) || '0000'
+    const type = cardForm.number.startsWith('4') ? 'Visa' : 'Mastercard'
+    setSavedCards([...savedCards, { id: Date.now(), type, last4, expiry: cardForm.expiry, holder: cardForm.holder }])
+    setIsAddingCard(false)
+    setCardForm({ number: '', expiry: '', cvc: '', holder: '' })
+  }
+
+  const handleDeleteCard = (id) => {
+    if (confirm('Remove this card?')) {
+      setSavedCards(savedCards.filter(c => c.id !== id))
+    }
+  }
 
   const [isAddingAddress, setIsAddingAddress] = useState(false)
   const [editingId, setEditingId] = useState(null) // Track which address is being edited
@@ -102,7 +124,8 @@ const Profile = () => {
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: User },
     { id: 'orders', label: 'My Orders', icon: Package },
-    { id: 'transactions', label: 'Invoices & Payments', icon: CreditCard },
+    { id: 'payments', label: 'Cards & Payments', icon: CreditCard },
+    { id: 'transactions', label: 'Transactions', icon: FileText },
     { id: 'addresses', label: 'Addresses', icon: MapPin },
   ]
 
@@ -310,20 +333,41 @@ const Profile = () => {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => {
-                                const invoiceContent = `Invoice for Order #${order.id}\nDate: ${order.date}\nAmount: ₹${order.total}\n\nThank you for renting with Rentalysis!`;
-                                const blob = new Blob([invoiceContent], { type: 'text/plain' });
-                                const url = window.URL.createObjectURL(blob);
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = `Invoice-${order.id}.txt`;
-                                document.body.appendChild(a);
-                                a.click();
-                                document.body.removeChild(a);
-                                window.URL.revokeObjectURL(url);
+                                const invoiceWindow = window.open('', '_blank');
+                                invoiceWindow.document.write(`
+                                  <html>
+                                    <head>
+                                      <title>Invoice #${order.id}</title>
+                                      <style>
+                                        body { font-family: sans-serif; padding: 20px; }
+                                        .header { margin-bottom: 20px; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
+                                        .details { margin-bottom: 20px; }
+                                        .amount { font-size: 1.2em; font-weight: bold; }
+                                      </style>
+                                    </head>
+                                    <body>
+                                      <div class="header">
+                                        <h1>Rentalysis Invoice</h1>
+                                        <p>Order ID: ${order.id}</p>
+                                        <p>Date: ${order.date}</p>
+                                      </div>
+                                      <div class="details">
+                                        <p><strong>Item:</strong> ${order.items[0].name}</p>
+                                        <p><strong>Vendor:</strong> TechRental Solutions</p>
+                                        <p class="amount">Total Amount: ₹${order.total}</p>
+                                      </div>
+                                      <p>Thank you for renting with Rentalysis!</p>
+                                      <script>
+                                        window.onload = function() { window.print(); }
+                                      </script>
+                                    </body>
+                                  </html>
+                                `);
+                                invoiceWindow.document.close();
                               }}
                               className="flex items-center gap-1.5 px-3 py-1.5 border border-neutral-200 rounded-lg text-xs font-bold text-neutral-600 hover:bg-neutral-50 transition-colors"
                             >
-                              <FileText className="w-3.5 h-3.5" /> Invoice
+                              <FileText className="w-3.5 h-3.5" /> Print Invoice
                             </button>
                             <button className="px-4 py-1.5 bg-sky-500 text-white rounded-lg text-xs font-bold hover:bg-sky-600 transition-colors shadow-sm shadow-sky-200">
                               View Details
@@ -457,6 +501,102 @@ const Profile = () => {
                     </div>
                     <button onClick={handleSaveAddress} className="w-full bg-emerald-600 text-white text-sm font-bold py-1.5 rounded-lg hover:bg-emerald-700">Save</button>
                     <button onClick={handleCancel} className="w-full text-neutral-500 text-xs py-1">Cancel</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* SECTION: PAYMENTS & CARDS */}
+        {activeTab === 'payments' && (
+          <div className="space-y-6 animate-in fade-in duration-500">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-neutral-900">Saved Cards</h2>
+              <button
+                onClick={() => setIsAddingCard(true)}
+                className="px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-lg hover:bg-emerald-700 shadow-lg shadow-emerald-200"
+              >
+                + Add New Card
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {savedCards.map(card => (
+                <div key={card.id} className="bg-neutral-900 p-6 rounded-2xl shadow-lg relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+
+                  <div className="flex justify-between items-start mb-8 relative z-10">
+                    <span className="font-mono text-white/50 text-xs tracking-widest uppercase">Debit/Credit</span>
+                    <span className="font-bold text-white italic text-lg">{card.type}</span>
+                  </div>
+
+                  <div className="mb-6 relative z-10">
+                    <p className="text-2xl text-white font-mono tracking-widest flex gap-4">
+                      <span>****</span>
+                      <span>****</span>
+                      <span>****</span>
+                      <span>{card.last4}</span>
+                    </p>
+                  </div>
+
+                  <div className="flex justify-between items-end relative z-10">
+                    <div>
+                      <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Card Holder</p>
+                      <p className="text-sm font-bold text-white uppercase">{card.holder}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] text-white/50 uppercase tracking-wider mb-1">Expires</p>
+                      <p className="text-sm font-bold text-white">{card.expiry}</p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleDeleteCard(card.id)}
+                    className="absolute top-4 right-4 text-white/20 hover:text-red-400 transition-colors p-1"
+                    title="Remove Card"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+
+              {isAddingCard && (
+                <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
+                  <h3 className="font-bold text-neutral-900 mb-4">Add New Card</h3>
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      placeholder="Card Number"
+                      className="w-full text-sm border rounded-lg px-3 py-2"
+                      value={cardForm.number}
+                      onChange={(e) => setCardForm({ ...cardForm, number: e.target.value })}
+                    />
+                    <div className="flex gap-3">
+                      <input
+                        type="text"
+                        placeholder="MM/YY"
+                        className="w-full text-sm border rounded-lg px-3 py-2"
+                        value={cardForm.expiry}
+                        onChange={(e) => setCardForm({ ...cardForm, expiry: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        placeholder="CVC"
+                        className="w-full text-sm border rounded-lg px-3 py-2"
+                        value={cardForm.cvc}
+                        onChange={(e) => setCardForm({ ...cardForm, cvc: e.target.value })}
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Card Holder Name"
+                      className="w-full text-sm border rounded-lg px-3 py-2"
+                      value={cardForm.holder}
+                      onChange={(e) => setCardForm({ ...cardForm, holder: e.target.value })}
+                    />
+                    <button onClick={handleAddCard} className="w-full bg-neutral-900 text-white text-sm font-bold py-2 rounded-lg hover:bg-black">Save Card</button>
+                    <button onClick={() => setIsAddingCard(false)} className="w-full text-neutral-500 text-xs py-1">Cancel</button>
                   </div>
                 </div>
               )}

@@ -42,13 +42,13 @@ const Orders = () => {
                 <p className="text-sm text-neutral-500 font-mono mb-2">Order {order.id}</p>
                 <div className="flex items-center gap-2 text-sm font-semibold">
                   <span className={`px-2.5 py-0.5 rounded text-xs uppercase tracking-wide border ${order.status === 'Active'
-                      ? 'bg-blue-50 text-blue-700 border-blue-100'
-                      : 'bg-green-50 text-green-700 border-green-100'
+                    ? 'bg-blue-50 text-blue-700 border-blue-100'
+                    : 'bg-green-50 text-green-700 border-green-100'
                     }`}>
                     {order.status}
                   </span>
                   <span className="text-neutral-300">|</span>
-                  <span className="text-neutral-900 font-bold">${order.total.toFixed(2)}</span>
+                  <span className="text-neutral-900 font-bold">₹{order.total.toFixed(2)}</span>
                 </div>
               </div>
             </div>

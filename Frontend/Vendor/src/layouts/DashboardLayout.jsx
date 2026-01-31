@@ -1,7 +1,7 @@
 import React from 'react'
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { LayoutDashboard, Package, ShoppingCart, FileText, BarChart2, Settings, LogOut, Bell, Search } from 'lucide-react'
-import logo from '../assets/logo.jpg'
+import logo from '../assets/logo.png'
 
 const DashboardLayout = () => {
   const location = useLocation()

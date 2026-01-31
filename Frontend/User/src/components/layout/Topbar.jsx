@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Search, ShoppingCart, Bell, User, Menu, LogOut, Package, MapPin } from 'lucide-react'
 import { cartItems } from '../../mock/data'
-import logo from '../../assets/logo.jpg'
+import logo from '../../assets/logo.png'
 
 const Topbar = () => {
   const navigate = useNavigate()
@@ -34,6 +34,13 @@ const Topbar = () => {
             />
             <Search className="absolute right-3 top-2.5 h-5 w-5 text-neutral-400" />
           </div>
+        </div>
+
+        {/* Center: Navigation - Desktop */}
+        <div className="hidden md:flex items-center gap-8 mx-auto">
+          <Link to="/products" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors">Products</Link>
+          <Link to="/about" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors">About Us</Link>
+          <Link to="/contact" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors">Contact</Link>
         </div>
 
         {/* Right: Actions */}

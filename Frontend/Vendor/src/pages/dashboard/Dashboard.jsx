@@ -1,6 +1,25 @@
-import React from 'react'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts'
 
 const Dashboard = () => {
+
+  const revenueData = [
+    { name: 'Mon', revenue: 4000 },
+    { name: 'Tue', revenue: 3000 },
+    { name: 'Wed', revenue: 2000 },
+    { name: 'Thu', revenue: 2780 },
+    { name: 'Fri', revenue: 1890 },
+    { name: 'Sat', revenue: 2390 },
+    { name: 'Sun', revenue: 3490 },
+  ]
+
+  const categoryData = [
+    { name: 'Cameras', count: 45 },
+    { name: 'Lenses', count: 32 },
+    { name: 'Lighting', count: 28 },
+    { name: 'Audio', count: 15 },
+    { name: 'Drones', count: 10 },
+  ]
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -19,16 +38,60 @@ const Dashboard = () => {
           { label: 'Utilization Rate', value: '84%', change: '+5.1%', trend: 'up' },
           { label: 'New Orders', value: '32', change: '+8.0%', trend: 'up' },
         ].map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
             <p className="text-sm font-medium text-gray-500">{stat.label}</p>
             <div className="mt-2 flex items-baseline gap-2">
               <span className="text-2xl font-bold text-gray-900">{stat.value}</span>
-              <span className={`text-xs padding-1 rounded-full ${stat.trend === 'up' ? 'text-green-600 bg-green-50 px-2 py-0.5' : 'text-red-600 bg-red-50 px-2 py-0.5'}`}>
+              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${stat.trend === 'up' ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-50'}`}>
                 {stat.change}
               </span>
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Revenue Chart */}
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Revenue Trend</h2>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={revenueData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  itemStyle={{ color: '#4f46e5' }}
+                />
+                <Area type="monotone" dataKey="revenue" stroke="#4f46e5" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Categories Chart */}
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Rentals by Category</h2>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={categoryData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                <Tooltip cursor={{ fill: '#f3f4f6' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                <Bar dataKey="count" fill="#4f46e5" radius={[4, 4, 0, 0]} barSize={40} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
     </div>
   )

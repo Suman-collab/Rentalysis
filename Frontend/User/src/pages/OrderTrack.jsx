@@ -96,11 +96,11 @@ const OrderTrack = () => {
           </div>
           <div>
             <span className="block text-xs font-bold text-neutral-500 uppercase mb-1">Security Deposit</span>
-            <span className="block text-sm font-semibold text-neutral-900">$100.00</span>
+            <span className="block text-sm font-semibold text-neutral-900">₹100.00</span>
           </div>
           <div className="col-span-2 pt-4 border-t border-neutral-200 flex justify-between items-center">
             <span className="font-bold text-neutral-900">Total Amount</span>
-            <span className="font-bold text-xl text-blue-600">${order.total.toFixed(2)}</span>
+            <span className="font-bold text-xl text-blue-600">₹{order.total.toFixed(2)}</span>
           </div>
         </div>
 
