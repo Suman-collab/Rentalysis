@@ -1,10 +1,8 @@
 // FILE: src/App.jsx
 import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom'
-import Sidebar from './components/layout/Sidebar'
 import Topbar from './components/layout/Topbar'
 import Home from './pages/Home'
-import Dashboard from './pages/Dashboard'
 import Products from './pages/Products'
 import ProductDetail from './pages/ProductDetail'
 import Cart from './pages/Cart'
@@ -16,16 +14,14 @@ import Login from './pages/auth/Login'
 import Signup from './pages/auth/Signup'
 import Error404 from './pages/Error404'
 
+// New Layout without Sidebar
 const Layout = () => {
   return (
-    <div className="flex h-screen bg-gray-50 text-neutral-900 font-sans">
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <Topbar />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 max-w-7xl mx-auto w-full">
-          <Outlet />
-        </main>
-      </div>
+    <div className="min-h-screen bg-gray-100 text-neutral-900 font-sans">
+      <Topbar />
+      <main className="pt-20 pb-12 px-4 md:px-8 max-w-7xl mx-auto w-full">
+        <Outlet />
+      </main>
     </div>
   )
 }
@@ -38,18 +34,21 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
 
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          {/* Redirect root to Profile as per request, or Home if preferred. User asked for Profile after login. */}
+          <Route path="/" element={<Navigate to="/profile" replace />} />
+
+          <Route path="/home" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/orders" element={<Navigate to="/profile" replace />} />
           <Route path="/orders/:id" element={<OrderTrack />} />
           <Route path="/invoices/:id" element={<Invoice />} />
           <Route path="/profile" element={<Profile />} />
 
-          {/* Catch-all for undefined routes */}
+          {/* Dashboard route removed/redirected as requested */}
+          <Route path="/dashboard" element={<Navigate to="/profile" replace />} />
+
           <Route path="*" element={<Error404 />} />
         </Route>
       </Routes>
