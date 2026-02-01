@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Depends,status,UploadFile,Form,Query
+from fastapi import APIRouter,Depends,status,UploadFile,Form,Query,File
 from fastapi.responses import JSONResponse
 from db.main import get_session
 from product.service import ProductService
@@ -17,7 +17,7 @@ product_service = ProductService()
 product_router = APIRouter()
 
 
-@product_router.get('/')
+@product_router.get('/all')
 async def get_all_products(
     limit: int = Query(10, ge=1, le=50),
     offset: int = Query(0, ge=0),
@@ -27,28 +27,24 @@ async def get_all_products(
 
 
 
-@product_router.post('/add')
+@product_router.post("/add")
 async def add_product(
-    images: List[UploadFile] = Form(...),
-    product: CreateProduct = Depends(),
-    user_details = Depends(get_current_user),
+    product: CreateProduct,
     session: AsyncSession = Depends(get_session),
-    _: bool = Depends(vendor_role_checker)
+    user_details = Depends(get_current_user),
+    _: bool = Depends(vendor_role_checker),
 ):
-    image_urls = await upload_images(images)
-    
-    result = await product_service.add_product(user_details.uid,product,image_urls,session)
-
-    return JSONResponse(
-        content={
-            'message' : 'Product added successfully'
-        },
-        status_code=status.HTTP_200_OK
+    await product_service.add_product(
+        user_details.uid,
+        product,
+        session
     )
+    return {"message": "Product added successfully"}
 
 
 
-@product_router.delete('/')
+
+@product_router.delete('/{uid}')
 async def remove_product(
     uid: str,
     _: bool = Depends(vendor_role_checker),
@@ -66,7 +62,7 @@ async def remove_product(
     raise ProductNotFound()
 
 
-@product_router.get('/')
+@product_router.get('/category')
 async def get_by_category(
     category: str,
     limit: int,
@@ -85,7 +81,7 @@ async def get_by_category(
         )
     raise ProductNotFound()
 
-@product_router.get('/')
+@product_router.get('/filter')
 async def get_by_filter(
     name: str | None = Query(None),
     category: str | None = Query(None),
@@ -117,3 +113,21 @@ async def update_product(
     session: AsyncSession = Depends(get_session)
 ):
     pass
+
+@product_router.get('/{id}')
+async def get_product_by_id(
+    pid: str,
+    session: AsyncSession = Depends(get_session)
+):
+    result = product_service.get_product_by_id(pid,session=session)
+
+    return result
+
+
+
+@product_router.post('/image')
+async def upload_image(
+    images: List[UploadFile]
+):
+    result = await upload_images(images)
+    return result

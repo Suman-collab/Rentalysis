@@ -4,6 +4,7 @@ from db.models import Product
 from uuid import UUID
 from sqlmodel import select,delete,func
 from typing import List,Optional, Sequence
+from utils.errors import ProductNotFound
 class ProductService: 
     async def get_products(
         self,
@@ -75,12 +76,11 @@ class ProductService:
         self,
         vid: str,
         product: CreateProduct,
-        images: list[str],
         session: AsyncSession
     ):
         new_product = Product(**product.model_dump())
         new_product.vid = vid
-        new_product.imageUrl = images
+    
 
         session.add(new_product)
         await session.commit()
@@ -129,3 +129,18 @@ class ProductService:
 
         result = await session.exec(stmt)
         return result.all()
+    
+
+    async def get_product_by_id(
+        self,
+        pid: str,
+        session: AsyncSession
+    ):
+        query = select(Product).where(Product.pid == pid)
+
+        result = await session.exec(query)
+
+        if result is None:
+            raise ProductNotFound()
+        
+        return result.first()

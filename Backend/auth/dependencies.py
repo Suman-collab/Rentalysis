@@ -14,7 +14,8 @@ from utils.errors import (
     RefreshTokenRequired,
     AccessTokenRequired,
     InSufficientPermission,
-    AccountNotVerified
+    AccountNotVerified,
+    UserNotFound
 )
 
 
@@ -76,7 +77,10 @@ async def get_current_user(
 ):
     user_email = token_detiails['user']['email']
     user = await auth_service.get_user_by_email(user_email,session)
-    return user
+    if user:
+        return user
+    
+    raise UserNotFound()
 
 class RoleChecker:
     def __init__(self,allowed_roless: List[str]) -> None:

@@ -5,17 +5,6 @@ class RentalysisError(Exception):
     """Base error for all Rentalysis exceptions"""
     pass
 
-class UserAlreadyExists(RentalysisError):
-    """Raised when a user with the same email already exists"""
-    pass
-
-class InvalidCredentials(RentalysisError):
-    """Raised when login credentials are incorrect"""
-    pass
-
-class UserNotFound(RentalysisError):
-    """Raised when a user is not found"""
-    pass
 
 class PasswordDoNotMatch(RentalysisError):
     """Raised when password and confirm password do not match"""
@@ -75,13 +64,22 @@ class BookNotFound(RentalysisError):
 class UserNotFound(RentalysisError):
     """User not found"""
     pass
+class OrderNotFound(RentalysisError):
+    """Order not found"""
+    pass
 
+class CouponNotFound(RentalysisError):
+    """Order not found"""
+    pass
 class ProductNotFound(RentalysisError):
     """Product not found"""
     pass
 
 class ReviewNotFound(RentalysisError):
     """Review not found"""
+    pass
+class InvoiceNotFound(RentalysisError):
+    """Invoice not found"""
     pass
 class InvalidReviewCredentials(RentalysisError):
     """Review can't be deleted"""
@@ -127,6 +125,16 @@ def register_all_errors(app: FastAPI):
             },
         ),
     )
+    app.add_exception_handler(
+        OrderNotFound,
+        create_exception_handler(
+            status_code=status.HTTP_404_NOT_FOUND,
+            initial_detail={
+                "message": "Order not found",
+                "error_code": "order_not_found",
+            },
+        ),
+    )
 
     app.add_exception_handler(
         UserAlreadyExists,
@@ -138,6 +146,7 @@ def register_all_errors(app: FastAPI):
             },
         ),
     )
+    
 
     # --- Token & Security Errors ---
     app.add_exception_handler(
@@ -229,6 +238,20 @@ def register_all_errors(app: FastAPI):
             initial_detail={"message": "Invalid GSTIN format", "error_code": "invalid_gstin"},
         ),
     )
+    app.add_exception_handler(
+        ProductNotFound,
+        create_exception_handler(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            initial_detail={"message": "Product not foun", "error_code": "product_not_found"},
+        ),
+    )
+    app.add_exception_handler(
+        InvoiceNotFound,
+        create_exception_handler(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            initial_detail={"message": "Invoice not found", "error_code": "invoice_not_found"},
+        ),
+    )
 
     # --- Resource Errors (Books, Tags, Reviews) ---
     app.add_exception_handler(
@@ -246,6 +269,14 @@ def register_all_errors(app: FastAPI):
             initial_detail={"message": "Product not found", "error_code": "product_not_found"},
         ),
     )
+    app.add_exception_handler(
+        UserNotFound,
+        create_exception_handler(
+            status_code=status.HTTP_404_NOT_FOUND,
+            initial_detail={"message": "Product not found", "error_code": "product_not_found"},
+        ),
+    )
+    
 
     app.add_exception_handler(
         TagAlreadyExists,

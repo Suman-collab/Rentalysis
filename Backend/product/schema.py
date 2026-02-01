@@ -4,13 +4,14 @@ from fastapi import UploadFile,Form
 
 
 class CreateProduct(BaseModel):
-    name: str = Form(...)
-    category: str = Form(...)
-    brand: str= Form(...)
-    quantity: int= Form(...)
-    daily_price: int | None= Form(...)
-    weekly_price: int | None= Form(...)
-    monthly_price: int | None= Form(...)
+    name: str 
+    category: str
+    brand: str
+    quantity: int
+    daily_price: int | None
+    weekly_price: int | None
+    monthly_price: int | None
+    image_urls: List[str] 
 
 
 class Updateproduct(BaseModel):
