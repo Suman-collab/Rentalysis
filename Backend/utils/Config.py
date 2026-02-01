@@ -23,6 +23,10 @@ class Config(BaseSettings):
     USE_CREDENTIALS: bool = True
     VALIDATE_CERTS: bool = True
 
+    CLOUDINARY_CLOUD_NAME :str
+    CLOUDINARY_API_KEY: str
+    CLOUDINARY_API_SECRET: str
+
     DOMAIN: str
     model_config = SettingsConfigDict(
         env_file='.env',

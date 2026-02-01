@@ -19,6 +19,7 @@ from .utils import verify_password,create_access_token,create_url_safe_token,gen
 from datetime import timedelta
 from fastapi.exceptions import HTTPException
 from datetime import datetime
+
 auth_router = APIRouter()
 
 auth_service = AuthService()
@@ -144,7 +145,7 @@ async def login_users(
                     'role' : user.role
                 }
             )
-            refresth_token = create_access_token(
+            refresh_token = create_access_token(
                 user_data={
                     'email' : user.email,
                     'uid' : str(user.uid)
@@ -153,17 +154,36 @@ async def login_users(
                 expiry=timedelta(days=REFRESH_TOKEN_EXPIRY)
             )
             
-            return JSONResponse(
+            response = JSONResponse(
+                status_code=status.HTTP_200_OK,
                 content={
                     'message' : 'Login Sucessfull',
                     'access_token' : access_token,
-                    'refresh_token' : refresth_token,
+                    'refresh_token' : refresh_token,
                     'user' : {
                         'email' : user.email,
                         'uid' : str(user.uid)
                     }
                 }
             )
+            response.set_cookie(
+                key='access_token',
+                value=access_token,
+                httponly=True,
+                samesite='lax',
+                max_age=60*60
+            )
+            response.set_cookie(
+                key='refres_token',
+                value=refresh_token,
+                httponly=True,
+                samesite='lax',
+                max_age=60 * 60 * 24 * REFRESH_TOKEN_EXPIRY
+            )
+            return response
+
+            
+            
         
 
     raise InvalidCredentials()
@@ -193,7 +213,7 @@ async def reset_account_password(
         
 
 
-        await auth_service.update_user(user,{'password_hash' : new_password_hash},session)
+        await auth_service.update_user(user,{'password' : new_password_hash},session)
 
         return JSONResponse(
             content={
@@ -210,6 +230,7 @@ async def reset_account_password(
         },
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
     )
+
 
 @auth_router.get('/refresh_token')
 async def get_new_access_token(

@@ -76,8 +76,8 @@ class UserNotFound(RentalysisError):
     """User not found"""
     pass
 
-class TagNotFound(RentalysisError):
-    """Tag not found"""
+class ProductNotFound(RentalysisError):
+    """Product not found"""
     pass
 
 class ReviewNotFound(RentalysisError):
@@ -240,10 +240,10 @@ def register_all_errors(app: FastAPI):
     )
 
     app.add_exception_handler(
-        TagNotFound,
+        ProductNotFound,
         create_exception_handler(
             status_code=status.HTTP_404_NOT_FOUND,
-            initial_detail={"message": "Tag not found", "error_code": "tag_not_found"},
+            initial_detail={"message": "Product not found", "error_code": "product_not_found"},
         ),
     )
 
