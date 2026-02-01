@@ -1,9 +1,7 @@
-
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Search, ArrowRight, ShieldCheck, Clock, CreditCard, RotateCcw, Monitor, Camera, Hammer, Armchair, Laptop } from 'lucide-react'
 
-import { products } from '../mock/data'
 import api from '../services/api'
 import { normalizeProductList } from '../utils/dataMapper'
 import logo from '../assets/logo.png'
@@ -15,13 +13,9 @@ const Home = () => {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-
-        const productsRes = await api.get('/products')
-
+        const productsRes = await api.get('/product/all')
         const normalizedProducts = normalizeProductList(productsRes.data)
         setHeroProducts(normalizedProducts.slice(0, 4))
-
-
         const token = localStorage.getItem('token')
         if (token) {
           try {
@@ -100,7 +94,7 @@ const Home = () => {
                   className={`bg-white p-2 md:p-3 rounded-xl md:rounded-2xl border border-neutral-100 shadow-sm transition-all duration-500 hover:shadow-xl hover:-translate-y-2 hover:z-30 relative group`}
                 >
                   <div className="aspect-[5/4] bg-neutral-50 rounded-lg md:rounded-xl mb-2 md:mb-3 overflow-hidden relative">
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                    <img src={product.imageUrl?.[0] || product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                     <div className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-[10px] md:text-xs font-bold shadow-sm">
                       ₹{product.price}/day
                     </div>
@@ -127,8 +121,8 @@ const Home = () => {
             { icon: Clock, title: "Flexible Duration", desc: "Rent for days or months" },
             { icon: CreditCard, title: "Secure Payments", desc: "Protected transactions" },
             { icon: RotateCcw, title: "Easy Returns", desc: "Doorstep pickup" }
-          ].map((item, i) => (
-            <div key={i} className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3 md:gap-4 group cursor-default">
+          ].map((item) => (
+            <div key={item.title} className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3 md:gap-4 group cursor-default">
               <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-xl md:rounded-2xl border border-neutral-200 flex items-center justify-center text-neutral-400 group-hover:text-blue-600 group-hover:border-blue-200 group-hover:scale-110 transition-all duration-300 shadow-sm">
                 <item.icon className="w-5 h-5 md:w-6 md:h-6" />
               </div>
@@ -184,7 +178,7 @@ const Home = () => {
               <div className="bg-white rounded-2xl md:rounded-3xl border border-neutral-200 overflow-hidden shadow-sm hover:shadow-xl hover:shadow-neutral-200/50 transition-all duration-500 h-full flex flex-col">
                 <div className="aspect-[4/3] relative bg-neutral-100 overflow-hidden">
                   <img
-                    src={product.image}
+                    src={product.images?.[0] || product.image}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />

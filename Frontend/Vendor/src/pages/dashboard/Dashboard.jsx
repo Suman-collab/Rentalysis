@@ -1,6 +1,12 @@
+import { useState } from 'react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts'
+import { ChevronDown } from 'lucide-react'
 
 const Dashboard = () => {
+  const [dateFilter, setDateFilter] = useState('Last 30 Days')
+  const [showDateDropdown, setShowDateDropdown] = useState(false)
+
+  const dateOptions = ['Last 7 Days', 'Last 30 Days', 'Last 90 Days', 'Last Year']
 
   const revenueData = [
     { name: '1', revenue: 4000 }, { name: '2', revenue: 3000 }, { name: '3', revenue: 2000 }, { name: '4', revenue: 2780 }, { name: '5', revenue: 1890 }, { name: '6', revenue: 2390 },
@@ -18,13 +24,83 @@ const Dashboard = () => {
     { name: 'Drones', count: 10 },
   ]
 
+  const handleExportReport = () => {
+    const stats = [
+      { label: 'Total Revenue', value: '$12,450.00', change: '+12.5%' },
+      { label: 'Active Rentals', value: '128', change: '-2.4%' },
+      { label: 'Utilization Rate', value: '84%', change: '+5.1%' },
+      { label: 'New Orders', value: '32', change: '+8.0%' },
+    ]
+
+    let csvContent = "data:text/csv;charset=utf-8,"
+    csvContent += "Dashboard Report - " + dateFilter + "\n\n"
+
+    csvContent += "Key Metrics\n"
+    csvContent += "Metric,Value,Change\n"
+    stats.forEach(stat => {
+      csvContent += `${stat.label},${stat.value},${stat.change}\n`
+    })
+
+    csvContent += "\nRevenue Trend\n"
+    csvContent += "Day,Revenue\n"
+    revenueData.forEach(item => {
+      csvContent += `${item.name},${item.revenue}\n`
+    })
+
+    csvContent += "\nRentals by Category\n"
+    csvContent += "Category,Count\n"
+    categoryData.forEach(item => {
+      csvContent += `${item.name},${item.count}\n`
+    })
+
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement("a")
+    link.setAttribute("href", encodedUri)
+    link.setAttribute("download", `dashboard_report_${new Date().toISOString().split('T')[0]}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  const handleDateFilterChange = (option) => {
+    setDateFilter(option)
+    setShowDateDropdown(false)
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
         <div className="flex gap-3">
-          <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">Last 30 Days</button>
-          <button className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">Export Report</button>
+          <div className="relative">
+            <button
+              onClick={() => setShowDateDropdown(!showDateDropdown)}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-2"
+            >
+              {dateFilter}
+              <ChevronDown className="w-4 h-4" />
+            </button>
+            {showDateDropdown && (
+              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                {dateOptions.map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => handleDateFilterChange(option)}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg ${dateFilter === option ? 'bg-indigo-50 text-indigo-600 font-medium' : 'text-gray-700'
+                      }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={handleExportReport}
+            className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+          >
+            Export Report
+          </button>
         </div>
       </div>
 

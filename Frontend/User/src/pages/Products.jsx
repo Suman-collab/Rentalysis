@@ -1,18 +1,76 @@
 
-import React, { useState } from 'react'
+
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, ChevronDown, Heart, Check, Filter } from 'lucide-react'
-import { products } from '../mock/data'
+import api from '../services/api'
+import { normalizeProductList } from '../utils/dataMapper'
 
 const Products = () => {
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('All')
-
 
   const [brandSearch, setBrandSearch] = useState('')
   const [selectedBrands, setSelectedBrands] = useState([])
   const [selectedDuration, setSelectedDuration] = useState('All Durations')
   const [priceRange, setPriceRange] = useState([10, 1000])
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(12) // 12 products per page
+  const [totalProducts, setTotalProducts] = useState(0)
+
+  // Fetch products from API with pagination and filters
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true)
+      try {
+        const offset = (currentPage - 1) * itemsPerPage
+
+        // Build query parameters
+        const params = new URLSearchParams({
+          limit: itemsPerPage.toString(),
+          offset: offset.toString()
+        })
+
+        // Add filter parameters
+        if (selectedCategory && selectedCategory !== 'All') {
+          params.append('category', selectedCategory)
+        }
+        if (selectedBrands.length > 0) {
+          params.append('brands', selectedBrands.join(','))
+        }
+        if (selectedDuration && selectedDuration !== 'All Durations') {
+          params.append('duration', selectedDuration.toLowerCase())
+        }
+        if (searchTerm) {
+          params.append('search', searchTerm)
+        }
+        params.append('minPrice', priceRange[0].toString())
+        params.append('maxPrice', priceRange[1].toString())
+
+        const response = await api.get(`/product/?${params.toString()}`)
+
+        // Backend should return { products: [...], total: number }
+        const productsData = Array.isArray(response.data) ? response.data : response.data.products || []
+        const total = response.data.total || productsData.length
+
+        const normalizedProducts = normalizeProductList(productsData)
+        setProducts(normalizedProducts)
+        setTotalProducts(total)
+      } catch (error) {
+        console.error('Failed to fetch products:', error)
+        // Fallback to empty array on error
+        setProducts([])
+        setTotalProducts(0)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchProducts()
+  }, [currentPage, itemsPerPage, selectedCategory, selectedBrands, selectedDuration, searchTerm, priceRange])
 
   const categories = ['All', 'Electronics', 'Furniture', 'Tools', 'Audio', 'Camping', 'Fitness']
 
@@ -26,17 +84,31 @@ const Products = () => {
     } else {
       setSelectedBrands([...selectedBrands, brand])
     }
+    // Reset to page 1 when filter changes
+    setCurrentPage(1)
   }
 
+  // Update other filter handlers to reset page
+  const handleCategoryChange = (cat) => {
+    setSelectedCategory(cat)
+    setCurrentPage(1)
+  }
 
-  const filteredProducts = products.filter(p =>
-    p.status === 'Available' &&
-    (selectedCategory === 'All' || p.category === selectedCategory) &&
-    (selectedBrands.length === 0 || (p.brand && selectedBrands.includes(p.brand))) &&
-    (selectedDuration === 'All Durations' || (p.availablePlans || ['day', 'week', 'month']).includes(selectedDuration.toLowerCase())) &&
-    (p.price >= priceRange[0] && p.price <= priceRange[1]) &&
-    p.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const handleDurationChange = (dur) => {
+    setSelectedDuration(dur)
+    setCurrentPage(1)
+  }
+
+  // Remove client-side filtering since API handles it
+  const filteredProducts = products
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-200 border-t-neutral-900"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
@@ -188,7 +260,7 @@ const Products = () => {
                       type="radio"
                       name="duration"
                       checked={selectedDuration === duration}
-                      onChange={() => setSelectedDuration(duration)}
+                      onChange={() => handleDurationChange(duration)}
                       className="w-4 h-4 text-neutral-900 border-gray-300 focus:ring-neutral-900"
                     />
                     <span className="text-sm text-neutral-600 group-hover:text-neutral-900">{duration}</span>
@@ -218,7 +290,7 @@ const Products = () => {
                 {categories.map((cat) => (
                   <button
                     key={cat}
-                    onClick={() => setSelectedCategory(cat)}
+                    onClick={() => handleCategoryChange(cat)}
                     className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${selectedCategory === cat
                       ? 'bg-neutral-900 text-white shadow-md'
                       : 'bg-white border border-neutral-200 text-neutral-600 hover:bg-neutral-50 hover:border-neutral-300'
@@ -292,6 +364,42 @@ const Products = () => {
               </div>
             )}
           </div>
+
+          {/* Pagination Controls */}
+          {totalProducts > itemsPerPage && (
+            <div className="mt-8 flex justify-center items-center gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-lg border border-neutral-200 text-sm font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+
+              <div className="flex gap-1">
+                {Array.from({ length: Math.ceil(totalProducts / itemsPerPage) }, (_, i) => i + 1).map(page => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${currentPage === page
+                      ? 'bg-neutral-900 text-white'
+                      : 'border border-neutral-200 text-neutral-700 hover:bg-neutral-50'
+                      }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(totalProducts / itemsPerPage)))}
+                disabled={currentPage === Math.ceil(totalProducts / itemsPerPage)}
+                className="px-4 py-2 rounded-lg border border-neutral-200 text-sm font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

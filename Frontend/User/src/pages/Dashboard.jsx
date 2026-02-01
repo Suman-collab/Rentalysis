@@ -1,11 +1,30 @@
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Clock, CheckCircle, Package, TrendingUp, AlertCircle } from 'lucide-react'
-import { orders, products } from '../mock/data'
+import api from '../services/api'
+import { normalizeProductList } from '../utils/dataMapper'
 
 const Dashboard = () => {
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get('/product/')
+        const normalizedProducts = normalizeProductList(response.data)
+        setProducts(normalizedProducts)
+      } catch (error) {
+        console.error('Failed to fetch products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
+  const orders = []
   const activeRentals = orders.filter(o => o.status === 'Active').length
   const completedRentals = orders.filter(o => o.status === 'Completed').length
   const totalSpent = orders.reduce((acc, curr) => acc + curr.total, 0)

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Plus } from 'lucide-react'
+
 
 const Orders = () => {
   const orders = [
@@ -16,10 +16,7 @@ const Orders = () => {
           <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
           <p className="text-gray-500 mt-1">Manage all rental orders</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-          <Plus className="w-4 h-4" />
-          New Order
-        </button>
+
       </div>
 
       {/* Filters */}

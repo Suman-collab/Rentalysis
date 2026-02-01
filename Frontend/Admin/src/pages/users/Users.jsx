@@ -1,5 +1,5 @@
 import React from 'react'
-import { Plus, Search, User, Mail, Phone } from 'lucide-react'
+import { Search, User, Mail, Phone } from 'lucide-react'
 
 const Users = () => {
   const stats = [
@@ -21,10 +21,7 @@ const Users = () => {
           <h1 className="text-2xl font-bold text-gray-900">Users</h1>
           <p className="text-gray-500 mt-1">Manage customers and staff</p>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-          <Plus className="w-4 h-4" />
-          Add User
-        </button>
+
       </div>
 
       {/* Stats */}

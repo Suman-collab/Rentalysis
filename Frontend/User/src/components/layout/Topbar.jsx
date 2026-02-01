@@ -1,9 +1,10 @@
 
+
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Search, ShoppingCart, Bell, User, Menu, LogOut, Package, MapPin } from 'lucide-react'
-import { cartItems, products } from '../../mock/data'
 import api from '../../services/api'
+import { normalizeProductList } from '../../utils/dataMapper'
 import logo from '../../assets/logo.png'
 import Notifications from '../Notifications'
 
@@ -12,17 +13,39 @@ const Topbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [showSuggestions, setShowSuggestions] = useState(false)
-
   const [searchResults, setSearchResults] = useState([])
 
+  // User data from /auth/me
+  const [user, setUser] = useState(null)
+  const [cartCount, setCartCount] = useState(0)
+
+  // Fetch user data on mount
+  React.useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem('token')
+      if (token) {
+        try {
+          const response = await api.get('/auth/me')
+          setUser(response.data)
+          localStorage.setItem('user', JSON.stringify(response.data))
+        } catch (error) {
+          console.error('Failed to fetch user data:', error)
+          // Token might be invalid, don't do anything
+        }
+      }
+    }
+    fetchUserData()
+  }, [])
 
   React.useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
       if (searchTerm.length > 1) {
         try {
-
-          const response = await api.get(`/products?search=${searchTerm}`)
-          setSearchResults(response.data.slice(0, 5))
+          const response = await api.get(`/product/?search=${searchTerm}`)
+          // Handle both array and object responses
+          const productsArray = Array.isArray(response.data) ? response.data : (response.data.products || [])
+          const normalized = normalizeProductList(productsArray)
+          setSearchResults(normalized.slice(0, 5))
         } catch (error) {
           console.error("Search failed", error)
           setSearchResults([])
@@ -111,15 +134,14 @@ const Topbar = () => {
           {/* Cart */}
           <Link to="/cart" className="relative p-2 text-neutral-600 hover:bg-neutral-100 rounded-full transition-colors group">
             <ShoppingCart className="w-5 h-5 group-hover:text-blue-600" />
-            {cartItems.length > 0 && (
+            {cartCount > 0 && (
               <span className="absolute top-1 right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full border border-white">
-                {cartItems.length}
+                {cartCount}
               </span>
             )}
             <span className="hidden">Cart</span>
           </Link>
 
-          {/* Notifications */}
           {/* Notifications */}
           <Notifications />
 
@@ -129,16 +151,20 @@ const Topbar = () => {
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               className="flex items-center gap-2 p-1 pl-2 pr-3 rounded-full hover:bg-neutral-100 border border-transparent hover:border-neutral-200 transition-all"
             >
-              <div className="w-8 h-8 bg-neutral-200 rounded-full overflow-hidden border border-neutral-300">
-                <img
-                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200"
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-8 h-8 bg-neutral-200 rounded-full overflow-hidden border border-neutral-300 flex items-center justify-center">
+                {user?.profile_picture || user?.avatar ? (
+                  <img
+                    src={user.profile_picture || user.avatar}
+                    alt={user.name || 'Profile'}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-5 h-5 text-neutral-400" />
+                )}
               </div>
               <div className="text-left hidden sm:block">
-                <p className="text-xs font-bold text-neutral-900">{import.meta.env.VITE_USER_NAME}</p>
-                <p className="text-[10px] text-neutral-500">{import.meta.env.VITE_USER_ROLE}</p>
+                <p className="text-xs font-bold text-neutral-900">{user?.name || 'Guest'}</p>
+                <p className="text-[10px] text-neutral-500">{user?.role || 'User'}</p>
               </div>
               {/* Mobile Menu Icon fallback */}
               <Menu className="w-4 h-4 text-neutral-400 sm:hidden" />
@@ -147,8 +173,8 @@ const Topbar = () => {
             {isProfileOpen && (
               <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-neutral-100 py-2 animate-in fade-in slide-in-from-top-2">
                 <div className="px-4 py-3 border-b border-neutral-100 mb-1">
-                  <p className="text-sm font-bold text-neutral-900">{import.meta.env.VITE_USER_NAME}</p>
-                  <p className="text-xs text-neutral-500">{import.meta.env.VITE_USER_EMAIL}</p>
+                  <p className="text-sm font-bold text-neutral-900">{user?.name || 'Guest User'}</p>
+                  <p className="text-xs text-neutral-500">{user?.email || 'No email'}</p>
                 </div>
 
                 <Link
